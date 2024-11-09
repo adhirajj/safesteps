@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
@@ -33,6 +35,9 @@ class _MapPageState extends State<MapPage> {
   TextEditingController _searchController = TextEditingController();
   Set<Polyline> _polylines = {};
   Marker? destinationMarker;
+  List<PlaceSuggestion> _suggestions = [];
+  bool _showSuggestions = false;
+  Timer? _debounce;
 
   Future<void> loadCustomIcon() async {
     BitmapDescriptor.asset(
@@ -534,70 +539,132 @@ class _MapPageState extends State<MapPage> {
                 top: MediaQuery.of(context).padding.top + 30,
                 left: 16,
                 right: 16,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: HexColor("B7A3A3"),
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onSubmitted: (value) {
-                      searchPlace(value);
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Where do you want to go?',
-                      hintStyle: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'Adam',
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 15,
-                      ),
-                      prefixIcon: Container(
-                        padding: const EdgeInsets.all(10),
-                        child: const Icon(
-                          Icons.directions_walk_rounded,
-                          color: Colors.black,
-                        ),
-                      ),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {
-                                destinationMarker = null;
-                                _polylines.clear();
-                              });
-                            },
-                          ),
-                          Builder(
-                            builder: (context) => IconButton(
-                              onPressed: () {
-                                Scaffold.of(context).openEndDrawer();
-                              },
-                              icon: const Icon(
-                                Icons.settings,
-                                color: Colors.black,
-                              ),
-                            ),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: HexColor("B7A3A3"),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: _getPlaceSuggestions,
+                        style: TextStyle(
+                          fontFamily: "Adam",
+                          fontWeight: FontWeight.normal,
+                          fontSize: 13,
+                          color: Colors.black
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Where do you want to go?',
+                          hintStyle: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal,
+                            fontFamily: 'Adam',
+                            color: Colors.black54
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 15,
+                          ),
+                          prefixIcon: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: const Icon(
+                              Icons.directions_walk_rounded,
+                              color: Colors.black,
+                            ),
+                          ),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_searchController.text.isNotEmpty)
+                                IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() {
+                                      destinationMarker = null;
+                                      _polylines.clear();
+                                      _suggestions = [];
+                                      _showSuggestions = false;
+                                    });
+                                  },
+                                ),
+                              Builder(
+                                builder: (context) => IconButton(
+                                  onPressed: () {
+                                    Scaffold.of(context).openEndDrawer();
+                                  },
+                                  icon: const Icon(
+                                    Icons.settings,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    if (_showSuggestions && _suggestions.isNotEmpty)
+                      Container(
+                        margin: EdgeInsets.only(top: 2),
+                        constraints: BoxConstraints(maxHeight: 200),
+                        decoration: BoxDecoration(
+                          color: HexColor("B7A3A3").withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ListView.builder(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: _suggestions.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    _suggestions[index].description,
+                                    style: TextStyle(
+                                      fontFamily: 'Adam',
+                                      fontSize: 12,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  // Add hover effect
+                                  hoverColor: HexColor("E3ADAD"),
+                                  // Add subtle divider between items
+                                  onTap: () {
+                                    _handleSuggestionTap(_suggestions[index]);
+                                  },
+                                ),
+                                if (index < _suggestions.length - 1)
+                                  Divider(
+                                    height: 1,
+                                    color: Colors.black.withOpacity(0.1),
+                                    indent: 16,
+                                    endIndent: 16,
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                  ],
                 ),
               ),
 
@@ -845,4 +912,102 @@ class _MapPageState extends State<MapPage> {
     }
     return points;
   }
+
+  Future<void> _getPlaceSuggestions(String input) async {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      if (input.isEmpty) {
+        setState(() {
+          _suggestions = [];
+          _showSuggestions = false;
+        });
+        return;
+      }
+
+      try {
+        final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+        final String baseUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+        final response = await http.get(
+            Uri.parse('$baseUrl?input=$input&key=$googleApiKey&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&components=country:us')
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          if (data['predictions'] != null) {
+            setState(() {
+              _suggestions = (data['predictions'] as List)
+                  .map((prediction) => PlaceSuggestion(
+                placeId: prediction['place_id'],
+                description: prediction['description'],
+              ))
+                  .toList();
+              _showSuggestions = true;
+            });
+          }
+        }
+      } catch (e) {
+        print('Error getting place suggestions: $e');
+      }
+    });
+  }
+
+  Future<void> _handleSuggestionTap(PlaceSuggestion suggestion) async {
+    try {
+      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String baseUrl = 'https://maps.googleapis.com/maps/api/place/details/json';
+      final response = await http.get(
+          Uri.parse('$baseUrl?place_id=${suggestion.placeId}&key=$googleApiKey')
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['result'] != null) {
+          final location = data['result']['geometry']['location'];
+          final lat = location['lat'];
+          final lng = location['lng'];
+
+          setState(() {
+            _searchController.text = suggestion.description;
+            _showSuggestions = false;
+            destinationMarker = Marker(
+              markerId: MarkerId('destination'),
+              position: LatLng(lat, lng),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+              infoWindow: InfoWindow(title: suggestion.description),
+            );
+          });
+
+          // Draw route
+          await getDirections(
+              LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+              LatLng(lat, lng)
+          );
+
+          // Move camera to show both points
+          LatLngBounds bounds = LatLngBounds(
+            southwest: LatLng(
+              min(currentLocation!.latitude!, lat),
+              min(currentLocation!.longitude!, lng),
+            ),
+            northeast: LatLng(
+              max(currentLocation!.latitude!, lat),
+              max(currentLocation!.longitude!, lng),
+            ),
+          );
+
+          mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+        }
+      }
+    } catch (e) {
+      print('Error handling suggestion tap: $e');
+    }
+  }
+}
+
+class PlaceSuggestion {
+  final String placeId;
+  final String description;
+
+  PlaceSuggestion({required this.placeId, required this.description});
 }
