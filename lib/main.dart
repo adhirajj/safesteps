@@ -10,9 +10,10 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    await Firebase.initializeApp();
-    print("Firebase initialized successfully");
-    Get.put(AuthenticationController());
+    await Firebase.initializeApp().then((value) {
+      print("Firebase initialized successfully");
+      Get.put(AuthenticationController());
+    });
   } catch (e) {
     print("Failed to initialize Firebase: $e");
   }
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         dividerColor: Colors.transparent,
       ),
       themeMode: ThemeMode.system, // This will follow the system theme
-      home: const SignupPage(),
+      home: const LoginPage(),
     );
   }
 }

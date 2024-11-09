@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
+import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
 import 'package:safesteps/auth/signup.dart';
 
@@ -15,8 +16,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  // var authenticationController = AuthenticationController.authController;
+  var authenticationController = AuthenticationController.authController;
   bool _obscureText = true;
+  bool showProgressBar = false;
 
   // text editing controllers
   TextEditingController emailTextEditingController = TextEditingController();
@@ -150,17 +152,71 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
+              showProgressBar == true
+                  ? const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange),
+              )
+                  : Container(),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(right: 32),
                   child: GestureDetector(
-                    onTap: () {
-                      Get.to(
-                        const SignupPage(),
-                        transition: Transition.fade,
-                        duration: const Duration(milliseconds: 400),
-                      );
+                    onTap: () async {
+                      if (emailTextEditingController.text.trim().isNotEmpty
+                          && passwordTextEditingController.text.trim().isNotEmpty)
+                      {
+                        setState(() {
+                          showProgressBar = true;
+                        });
+
+                        try {
+                          await authenticationController.loginUser(
+                            emailTextEditingController.text.trim(),
+                            passwordTextEditingController.text.trim(),
+                          );
+                        } catch (error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Account login failed: $error',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Adam',
+                                ),
+                              ),
+                              duration: const Duration(seconds: 4),
+                            ),
+                          );
+                        } finally {
+                          setState(() {
+                            showProgressBar = false;
+                          });
+                        }
+                        //
+                        Get.to(
+                          const SignupPage(),
+                          transition: Transition.fade,
+                          duration: const Duration(milliseconds: 400),
+                        );
+                        //
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'A Field is empty. Please fill out all text fields.',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Adam',
+                              ),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),  //20, 10
