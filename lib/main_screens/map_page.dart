@@ -26,10 +26,10 @@ class _MapPageState extends State<MapPage> {
   static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
   late GoogleMapController mapController;
 
-  call() async {
+  call(phoneNo) async {
     final Uri phoneCall = Uri(
       scheme: 'tel',
-      path: '4135452123'
+      path: phoneNo,
     );
     await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
   }
@@ -47,8 +47,7 @@ class _MapPageState extends State<MapPage> {
         'Virtual Escort',
         'Want someone from UMass Security to come to your location and walk with you to your destination?',
             () async {
-          print("Virtual Escort tapped");
-          await call();
+          await call('4135452123');
         }
     ),
     DrawerItem(
@@ -187,9 +186,19 @@ class _MapPageState extends State<MapPage> {
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 40),
                   child: GestureDetector(
-                    onTap: (){
+                    onTap: () async {
                       //SOS functionality
                       print("SOS pushed");
+
+                      call(phoneNo) async {
+                        final Uri phoneCall = Uri(
+                          scheme: 'tel',
+                          path: phoneNo,
+                        );
+                        await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
+                      }
+
+                      await call('911');
                     },
                     child: Container(
                       height: 70,
