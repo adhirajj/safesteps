@@ -16,7 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  var authenticationController = AuthenticationController.authController;
+  final authenticationController = Get.find<AuthenticationController>();
   bool _obscureText = true;
   bool showProgressBar = false;
 

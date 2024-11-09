@@ -5,35 +5,40 @@ import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
 import 'package:safesteps/auth/signup.dart';
 
-void main() async{
-
+void main() async {
+  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase first
   try {
-    await Firebase.initializeApp().then((value) {
-      print("Firebase initialized successfully");
-      Get.put(AuthenticationController());
-    });
+    await Firebase.initializeApp();
+    print("Firebase initialized successfully");
   } catch (e) {
     print("Failed to initialize Firebase: $e");
   }
 
+  // Initialize GetX controller
+  Get.put(AuthenticationController(), permanent: true);
+
+  // Run the app
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      initialBinding: BindingsBuilder(() {
+        Get.put(AuthenticationController(), permanent: true);
+      }),
       theme: ThemeData(
         useMaterial3: true,
         dividerColor: Colors.transparent,
       ),
-      themeMode: ThemeMode.system, // This will follow the system theme
+      themeMode: ThemeMode.system,
       home: const LoginPage(),
     );
   }

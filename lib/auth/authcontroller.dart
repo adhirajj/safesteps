@@ -12,6 +12,12 @@ class AuthenticationController extends GetxController {
   late Rx<User?> firebaseCurrentUser;
   String? userName;
 
+  @override
+  void onInit() {
+    super.onInit();
+    // Initialize any required variables or services
+  }
+
   Future<void> createNewUserAccount(String email, String password) async {
     try {
       // Authenticate user and create user with email and password
