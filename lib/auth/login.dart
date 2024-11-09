@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_color/flutter_color.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height);
     return Scaffold(
+      backgroundColor: HexColor('C2ADAD'),
+      appBar: AppBar(
+
+      ),
     );
   }
 }
+

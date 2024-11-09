@@ -37,6 +37,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_color:
   get:
+  firebase_core:
+  firebase_auth:
+  firebase_messaging:
+  firebase_storage:
+  firebase_analytics:
+  cloud_firestore:
 
 dev_dependencies:
   flutter_test:
@@ -79,7 +85,7 @@ flutter:
   fonts:
      - family: Adam
        fonts:
-         - asset: font/ADLaMDisplay-Regular.ttf
+         - asset: lib/font/ADLaMDisplay-Regular.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

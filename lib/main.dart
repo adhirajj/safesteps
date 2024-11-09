@@ -1,8 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
 
-void main() {
+void main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp();
+    print("Firebase initialized successfully");
+    Get.put(AuthenticationController());
+  } catch (e) {
+    print("Failed to initialize Firebase: $e");
+  }
+
   runApp(const MyApp());
 }
 
