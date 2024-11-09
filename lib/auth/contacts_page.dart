@@ -303,33 +303,19 @@ class _ContactsPageState extends State<ContactsPage> {
                         });
 
                         try {
-                           if(authenticationController.userContacts(
+                          authenticationController.userContacts(
                             contact1TextEditingController.text.trim(),
                             contact2TextEditingController.text.trim(),
                             contact3TextEditingController.text.trim(),
                             contact4TextEditingController.text.trim(),
                             contact5TextEditingController.text.trim(),
                             contact6TextEditingController.text.trim(),
-                          )) {
-                             Get.to(
-                               const MapPage(),
-                               transition: Transition.fade,
-                               duration: const Duration(milliseconds: 400),
-                             );
-                           } else {
-                             SnackBar(
-                               content: Text(
-                                 'Contact saving failed',
-                                 style: TextStyle(
-                                   fontSize: 18,
-                                   fontWeight: FontWeight.bold,
-                                   fontFamily: 'Adam',
-                                 ),
-                               ),
-                               duration: const Duration(seconds: 4),
-                             );
-                           }
-
+                          );
+                          Get.to(
+                            const MapPage(),
+                            transition: Transition.fade,
+                            duration: const Duration(milliseconds: 400),
+                          );
                         } catch (error) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(

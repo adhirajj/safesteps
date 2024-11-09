@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
 import '../auth/login.dart';
 
 class MapPage extends StatefulWidget {
@@ -27,6 +29,21 @@ class _MapPageState extends State<MapPage> {
   static const LatLng _pHagisMall = LatLng(42.3863, -72.5258);
   late GoogleMapController mapController;
   LocationData? currentLocation;
+  BitmapDescriptor? customIcon;
+  TextEditingController _searchController = TextEditingController();
+  Set<Polyline> _polylines = {};
+  Marker? destinationMarker;
+
+  Future<void> loadCustomIcon() async {
+    BitmapDescriptor.asset(
+      ImageConfiguration(size: Size(28, 28)),  // Adjust size as needed
+      "lib/icons/call.png",
+    ).then((icon) {
+      setState(() {
+        customIcon = icon;
+      });
+    });
+  }
 
   void getCurrentLocation() async {
     Location location = Location();
@@ -59,6 +76,7 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     getCurrentLocation();
+    loadCustomIcon();
   }
 
   call(phoneNo) async {
@@ -159,33 +177,6 @@ class _MapPageState extends State<MapPage> {
   static const LatLng helpline50 = LatLng(42.3903742, -72.5242077); // Health Services – Main Entrance
   static const LatLng helpline51 = LatLng(42.387095, -72.526445); // Herter – Haigis Mall @ Bus Stop
   static const LatLng helpline52 = LatLng(42.390946, -72.545321); // ILC East – Second Floor
-  // static const LatLng helpline53 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline54 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline55 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline56 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline57 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline58 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline59 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline60 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline61 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline62 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline63 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline64 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline65 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline66 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline67 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline68 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline69 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline70 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline71 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline72 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline73 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline74 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline75 = LatLng(42., -72.); // Baker House
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -196,8 +187,14 @@ class _MapPageState extends State<MapPage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                child: currentLocation == null ? Center(child: Text("Loading..."),) : GoogleMap(
-                  initialCameraPosition: CameraPosition(target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!), zoom: 15),
+                child: currentLocation == null ?
+                Center(child: Text("Loading..."),)
+                    :
+                GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                      zoom: 15
+                  ),
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
                   onMapCreated: (GoogleMapController controller) {
@@ -206,11 +203,330 @@ class _MapPageState extends State<MapPage> {
                   },
                   markers: {
                     Marker(
-                      markerId: MarkerId("358 N Pleasant St."),
+                      markerId: MarkerId("CurrentLocation"),
                       icon: BitmapDescriptor.defaultMarker,
                       position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
                     ),
+
+                    //helpline markers
+                    Marker(
+                      markerId: MarkerId("358 N Pleasant St."),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline1,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Baker House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline2,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Bartlett – West Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline3,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Berkshire DC – South Side- Malcom X"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline4,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Berkshire House – South Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline5,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Birch"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline6,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Boyden Field – Tunnel Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline7,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Brett House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline8,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Brooks House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline9,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Brown House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline10,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Burma Trail – Orchard Hill"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline11,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Bus Shelter B – Stadium Rd."),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline12,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Bus Shelter C – Olympia Dr."),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline13,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Bus Shelter D – Lot 12 behind Parking Services"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline14,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Bus Shelter E – Mass Ave / Sunset"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline15,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Butterfield House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline16,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Campus Center Parking Garage – Loading Dock"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline17,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Campus Pond – West Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline18,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Cance House – Front (North Side)"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline19,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Cashin House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline20,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Chadbourne House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline21,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Champions Center S. West – Back Door"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline22,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Chenoweth"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline23,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Computer Science – North Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline24,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Computer Science – Southwest Corner"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline25,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Conte Loading Dock"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline26,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Coolidge Tower"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline27,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Crabtree House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline28,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Crampton House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline29,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Curry Hicks"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline30,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Dickinson House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline31,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Draper Annex – East Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline32,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Durfee – North Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline33,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Dwight House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline34,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ELAB II – North End"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline35,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ELAB II – South End"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline36,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Elm East"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline37,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Elm West"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline38,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Emerson House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline39,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Field House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline40,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Franklin DC ATM"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline41,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Furcolo"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline42,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Gordon Hall"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline43,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Goodell – Upper Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline44,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Gorman House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline45,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Grayson House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline46,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Greenough House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline47,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Hampshire DC ATM"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline48,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Hamlin House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline49,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Health Services – Main Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline50,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Herter – Haigis Mall @ Bus Stop"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline51,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ILC East – Second Floor"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline52,
+                    ),
+
+                    //////////
+                    if (destinationMarker != null) destinationMarker!,
+                    /////////
+
                   },
+                  polylines: _polylines,
                 ),
               ),
               // Search bar at the top with padding
@@ -231,6 +547,10 @@ class _MapPageState extends State<MapPage> {
                     ],
                   ),
                   child: TextField(
+                    controller: _searchController,
+                    onSubmitted: (value) {
+                      searchPlace(value);
+                    },
                     decoration: InputDecoration(
                       hintText: 'Where do you want to go?',
                       hintStyle: const TextStyle(
@@ -250,16 +570,31 @@ class _MapPageState extends State<MapPage> {
                           color: Colors.black,
                         ),
                       ),
-                      suffixIcon: Builder(
-                        builder: (context) => IconButton(
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.clear),
                             onPressed: () {
-                              Scaffold.of(context).openEndDrawer();
+                              _searchController.clear();
+                              setState(() {
+                                destinationMarker = null;
+                                _polylines.clear();
+                              });
                             },
-                            icon: const Icon(
-                              Icons.settings,
-                              color: Colors.black,
+                          ),
+                          Builder(
+                            builder: (context) => IconButton(
+                              onPressed: () {
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                              icon: const Icon(
+                                Icons.settings,
+                                color: Colors.black,
+                              ),
                             ),
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -398,5 +733,116 @@ class _MapPageState extends State<MapPage> {
           ),
         ),
     );
+  }
+
+  Future<void> searchPlace(String query) async {
+    if (currentLocation == null) return;
+
+    try {
+      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String baseUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
+      final response = await http.get(
+          Uri.parse('$baseUrl?query=$query&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&key=$googleApiKey')
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['results'] != null && data['results'].isNotEmpty) {
+          final place = data['results'][0];
+          final lat = place['geometry']['location']['lat'];
+          final lng = place['geometry']['location']['lng'];
+
+          setState(() {
+            destinationMarker = Marker(
+              markerId: MarkerId('destination'),
+              position: LatLng(lat, lng),
+              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+              infoWindow: InfoWindow(title: place['name']),
+            );
+          });
+
+          // Draw route
+          await getDirections(LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+              LatLng(lat, lng));
+
+          // Move camera to show both points
+          LatLngBounds bounds = LatLngBounds(
+            southwest: LatLng(
+              min(currentLocation!.latitude!, lat),
+              min(currentLocation!.longitude!, lng),
+            ),
+            northeast: LatLng(
+              max(currentLocation!.latitude!, lat),
+              max(currentLocation!.longitude!, lng),
+            ),
+          );
+
+          mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+        }
+      }
+    } catch (e) {
+      print('Error searching place: $e');
+    }
+  }
+
+  Future<void> getDirections(LatLng origin, LatLng destination) async {
+    try {
+      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+      final response = await http.get(
+          Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final points = decodePolyline(data['routes'][0]['overview_polyline']['points']);
+
+          setState(() {
+            _polylines.clear();
+            _polylines.add(
+              Polyline(
+                polylineId: PolylineId('route'),
+                points: points,
+                color: Colors.blue,
+                width: 5,
+              ),
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print('Error getting directions: $e');
+    }
+  }
+
+  List<LatLng> decodePolyline(String encoded) {
+    List<LatLng> points = [];
+    int index = 0, len = encoded.length;
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      points.add(LatLng(lat / 1E5, lng / 1E5));
+    }
+    return points;
   }
 }
