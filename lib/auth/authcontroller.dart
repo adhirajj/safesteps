@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
+import 'package:safesteps/auth/contacts_page.dart';
 import 'package:safesteps/auth/login.dart';
 import 'package:safesteps/auth/person.dart' as personModel;
 import 'package:safesteps/main_screens/map_page.dart';
@@ -11,6 +12,7 @@ class AuthenticationController extends GetxController {
   static AuthenticationController authController = Get.find();
   late Rx<User?> firebaseCurrentUser;
   String? userName;
+  String get currentUserId => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   @override
   void onInit() {
@@ -40,12 +42,37 @@ class AuthenticationController extends GetxController {
       await FirebaseFirestore.instance.collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .set(personInstance.toJson());
-
-      Get.to(const MapPage(), transition: Transition.fade,
-          duration: const Duration(milliseconds: 400));
     } catch (errorMsg) {
       throw errorMsg
           .toString(); // Throw the error instead of showing a snackbar
+    }
+  }
+
+  userContacts(String contact1, String contact2, String contact3, String contact4, String contact5, String contact6) async {
+    if (contact1.isNotEmpty
+        && contact2.isNotEmpty
+        && contact3.isNotEmpty
+        && contact4.isNotEmpty
+        && contact5.isNotEmpty
+        && contact6.isNotEmpty
+    ) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .set(
+        {
+          'contact1': contact1,
+          'contact2': contact2,
+          'contact3': contact3,
+          'contact4': contact4,
+          'contact5': contact5,
+          'contact6': contact6,
+        }
+      );
+
+      return true;
+    } else{
+      return false;
     }
   }
 
@@ -54,6 +81,7 @@ class AuthenticationController extends GetxController {
       email: email,
       password: password,
     );
+
 
     checkIfUserIsLoggedIn(User? currentUser) async {
       if (currentUser == null) {

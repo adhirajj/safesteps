@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
+import 'package:safesteps/auth/contacts_page.dart';
 import 'package:safesteps/auth/login.dart';
 
 import '../widgets/custom_text_field_widget.dart';
@@ -182,6 +183,11 @@ class _SignupPageState extends State<SignupPage> {
                             emailTextEditingController.text.trim(),
                             passwordTextEditingController.text.trim(),
                           );
+                        Get.to(
+                          const ContactsPage(),
+                          transition: Transition.fade,
+                          duration: const Duration(milliseconds: 400),
+                        );
                       } catch (error) {
                         print(error);
                         ScaffoldMessenger.of(context).showSnackBar(
