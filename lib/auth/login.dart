@@ -176,6 +176,12 @@ class _LoginPageState extends State<LoginPage> {
                             emailTextEditingController.text.trim(),
                             passwordTextEditingController.text.trim(),
                           );
+
+                          Get.to(
+                            const SignupPage(),
+                            transition: Transition.fade,
+                            duration: const Duration(milliseconds: 400),
+                          );
                         } catch (error) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -195,13 +201,6 @@ class _LoginPageState extends State<LoginPage> {
                             showProgressBar = false;
                           });
                         }
-                        //
-                        Get.to(
-                          const SignupPage(),
-                          transition: Transition.fade,
-                          duration: const Duration(milliseconds: 400),
-                        );
-                        //
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

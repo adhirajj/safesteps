@@ -5,22 +5,21 @@ import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
 import 'package:safesteps/auth/signup.dart';
 
+import 'firebase_options.dart';
+
 void main() async {
-  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase first
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,  // Use this
+    );
     print("Firebase initialized successfully");
+    Get.put(AuthenticationController());
   } catch (e) {
     print("Failed to initialize Firebase: $e");
   }
 
-  // Initialize GetX controller
-  Get.put(AuthenticationController(), permanent: true);
-
-  // Run the app
   runApp(const MyApp());
 }
 
