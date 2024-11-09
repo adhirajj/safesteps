@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
+import 'package:safesteps/auth/signup.dart';
 
 void main() async{
 
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         dividerColor: Colors.transparent,
       ),
       themeMode: ThemeMode.system, // This will follow the system theme
-      home: const LoginPage(),
+      home: const SignupPage(),
     );
   }
 }
