@@ -76,6 +76,31 @@ class AuthenticationController extends GetxController {
     }
   }
 
+  Future<List<String?>> getUserContacts() async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .get();
+
+      if (userDoc.exists) {
+        return [
+          userDoc.get('contact1') as String?,
+          userDoc.get('contact2') as String?,
+          userDoc.get('contact3') as String?,
+          userDoc.get('contact4') as String?,
+          userDoc.get('contact5') as String?,
+          userDoc.get('contact6') as String?,
+        ];
+      } else {
+        throw Exception("User document does not exist");
+      }
+    } catch (error) {
+      print("Error retrieving contacts: $error");
+      return []; // Return an empty list or handle the error accordingly
+    }
+  }
+
   loginUser(String email, String password) async {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
