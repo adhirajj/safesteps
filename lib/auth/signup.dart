@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:safesteps/auth/login.dart';
 
 import '../widgets/custom_text_field_widget.dart';
+import 'authcontroller.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -14,7 +15,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
 
-  // var authenticationController = AuthenticationController.authController;
+  var authenticationController = AuthenticationController.authController;
   bool _obscureText = true;
 
   // text editing controllers
@@ -154,12 +155,63 @@ class _SignupPageState extends State<SignupPage> {
               child: Padding(
                 padding: const EdgeInsets.only(right: 32),
                 child: GestureDetector(
-                  onTap: () {
-                    Get.to(
-                      const LoginPage(),
-                      transition: Transition.fade,
-                      duration: const Duration(milliseconds: 400),
-                    );
+                  onTap: () async {
+                    if (emailTextEditingController.text.trim().isNotEmpty
+                      && passwordTextEditingController.text.trim().isNotEmpty) {
+
+                      // if (!isUniversityEmail(emailTextEditingController.text.trim())) {
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     const SnackBar(
+                      //       content: Text(
+                      //         'Please use a valid university email address.',
+                      //         style: TextStyle(
+                      //           fontSize: 16,
+                      //           fontWeight: FontWeight.bold,
+                      //           fontFamily: 'Adam',
+                      //         ),
+                      //       ),
+                      //       duration: Duration(seconds: 2),
+                      //     ),
+                      //   );
+                      //   return;
+                      // }
+
+                      try {
+                        await authenticationController
+                          .createNewUserAccount(
+                            emailTextEditingController.text.trim(),
+                            passwordTextEditingController.text.trim(),
+                          );
+                      } catch (error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Account creation failed: $error',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Adam',
+                              ),
+                            ),
+                            duration: const Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'A Field is empty. Please fill out all text fields.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Adam',
+                            ),
+                          ),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),  //20, 10

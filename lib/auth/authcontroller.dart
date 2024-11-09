@@ -40,6 +40,9 @@ class AuthenticationController extends GetxController {
       await FirebaseFirestore.instance.collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .set(personInstance.toJson());
+
+      Get.to(const MapPage(), transition: Transition.fade,
+          duration: const Duration(milliseconds: 400));
     } catch (errorMsg) {
       throw errorMsg
           .toString(); // Throw the error instead of showing a snackbar
