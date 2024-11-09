@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
 import 'package:safesteps/auth/signup.dart';
+import 'package:safesteps/main_screens/map_page.dart';
 
 import 'firebase_options.dart';
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         dividerColor: Colors.transparent,
       ),
       themeMode: ThemeMode.system,
-      home: const LoginPage(),
+      home: const MapPage(),
     );
   }
 }

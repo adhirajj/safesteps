@@ -183,6 +183,7 @@ class _SignupPageState extends State<SignupPage> {
                             passwordTextEditingController.text.trim(),
                           );
                       } catch (error) {
+                        print(error);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
