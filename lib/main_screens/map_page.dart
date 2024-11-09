@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../auth/login.dart';
 
@@ -61,13 +61,12 @@ class _MapPageState extends State<MapPage> {
     getCurrentLocation();
   }
 
-  Future<void> _callNumber(String number) async {
-    print("Attempting to call number: $number");
-    try {
-      await FlutterPhoneDirectCaller.callNumber(number);
-    } catch (e) {
-      print("Error making call: $e");
-    }
+  call(phoneNo) async {
+    final Uri phoneCall = Uri(
+      scheme: 'tel',
+      path: phoneNo,
+    );
+    await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
   }
 
   late final List<DrawerItem> drawerItems = [
@@ -83,8 +82,7 @@ class _MapPageState extends State<MapPage> {
         'Virtual Escort',
         'Want someone from UMass Security to come to your location and walk with you to your destination?',
             () async {
-          print("Virtual Escort tapped");
-          await _callNumber('4132756640');
+          await call('4135452123');
         }
     ),
     DrawerItem(
@@ -224,9 +222,18 @@ class _MapPageState extends State<MapPage> {
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 40),
                   child: GestureDetector(
-                    onTap: (){
+                    onTap: () async {
                       //SOS functionality
                       print("SOS pushed");
+                      call(phoneNo) async {
+                        final Uri phoneCall = Uri(
+                          scheme: 'tel',
+                          path: phoneNo,
+                        );
+                        await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
+                      }
+
+                      await call('911');
                     },
                     child: Container(
                       height: 70,
@@ -237,7 +244,7 @@ class _MapPageState extends State<MapPage> {
                         color: HexColor("#881C1C"),
                       ),
                       child: Align(
-                        alignment: Alignment.center,
+                        //alignment: Alignment.center,
                         child:
                         Row(
                           children: [

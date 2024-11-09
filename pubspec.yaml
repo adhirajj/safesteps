@@ -47,6 +47,8 @@ dependencies:
   google_maps_flutter:
   location:
   google_maps_flutter_ios:
+  pdfx: ^2.8.0
+  internet_file: ^1.2.0
 
 dev_dependencies:
   flutter_test:
