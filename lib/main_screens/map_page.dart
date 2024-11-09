@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../auth/login.dart';
 
@@ -26,13 +26,12 @@ class _MapPageState extends State<MapPage> {
   static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
   late GoogleMapController mapController;
 
-  Future<void> _callNumber(String number) async {
-    print("Attempting to call number: $number");
-    try {
-      await FlutterPhoneDirectCaller.callNumber(number);
-    } catch (e) {
-      print("Error making call: $e");
-    }
+  call() async {
+    final Uri phoneCall = Uri(
+      scheme: 'tel',
+      path: '4135452123'
+    );
+    await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
   }
 
   late final List<DrawerItem> drawerItems = [
@@ -49,7 +48,7 @@ class _MapPageState extends State<MapPage> {
         'Want someone from UMass Security to come to your location and walk with you to your destination?',
             () async {
           print("Virtual Escort tapped");
-          await _callNumber('4132756640');
+          await call();
         }
     ),
     DrawerItem(
