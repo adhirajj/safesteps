@@ -43,6 +43,7 @@ dependencies:
   firebase_storage:
   firebase_analytics:
   cloud_firestore:
+  flutter_phone_direct_caller: ^2.1.1
   google_maps_flutter:
   location:
   google_maps_flutter_ios:
