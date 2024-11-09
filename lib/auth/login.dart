@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
 import 'package:safesteps/auth/signup.dart';
+import 'package:safesteps/main_screens/map_page.dart';
 
 import '../widgets/custom_text_field_widget.dart';
 
@@ -178,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                           );
 
                           Get.to(
-                            const SignupPage(),
+                            const MapPage(),
                             transition: Transition.fade,
                             duration: const Duration(milliseconds: 400),
                           );

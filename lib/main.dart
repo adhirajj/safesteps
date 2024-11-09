@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         dividerColor: Colors.transparent,
       ),
       themeMode: ThemeMode.system,
-      home: const MapPage(),
+      home: const LoginPage(),
     );
   }
 }
