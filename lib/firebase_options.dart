@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'safesteps-8351d.firebasestorage.app',
     measurementId: 'G-39KDPKKNJY',
   );
+
 }
