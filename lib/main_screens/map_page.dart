@@ -872,7 +872,7 @@ class _MapPageState extends State<MapPage> {
     if (currentLocation == null) return;
 
     try {
-      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String googleApiKey = 'API-Key';
       final String baseUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
       final response = await http.get(
           Uri.parse('$baseUrl?query=$query&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&key=$googleApiKey')
@@ -920,7 +920,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> getDirections(LatLng origin, LatLng destination) async {
     try {
-      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String googleApiKey = 'API-Key';
       final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
       final response = await http.get(
           Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
@@ -992,7 +992,7 @@ class _MapPageState extends State<MapPage> {
       }
 
       try {
-        final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+        final String googleApiKey = 'API-Key';
         final String baseUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
         final response = await http.get(
             Uri.parse('$baseUrl?input=$input&key=$googleApiKey&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&components=country:us')
@@ -1020,7 +1020,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _handleSuggestionTap(PlaceSuggestion suggestion) async {
     try {
-      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String googleApiKey = 'API-Key';
       final String baseUrl = 'https://maps.googleapis.com/maps/api/place/details/json';
       final response = await http.get(
           Uri.parse('$baseUrl?place_id=${suggestion.placeId}&key=$googleApiKey')
