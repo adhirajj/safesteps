@@ -3,6 +3,7 @@ import 'package:flutter_color/flutter_color.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 import '../auth/login.dart';
 
@@ -23,8 +24,42 @@ class DrawerItem {
 
 class _MapPageState extends State<MapPage> {
 
-  static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
+  static const LatLng _pHagisMall = LatLng(42.3863, -72.5258);
   late GoogleMapController mapController;
+  LocationData? currentLocation;
+
+  void getCurrentLocation() async {
+    Location location = Location();
+
+    try {
+      location.getLocation().then(
+            (location) {
+          setState(() {  // Add setState here
+            currentLocation = location;
+            print("Current Location yessirrrr: $currentLocation");
+          });
+        },
+      );
+
+      // Also listen for location changes
+      location.onLocationChanged.listen(
+            (LocationData newLocation) {
+          setState(() {
+            currentLocation = newLocation;
+            print("Updated Location: $currentLocation");
+          });
+        },
+      );
+    } catch (e) {
+      print("Error getting location: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocation();
+  }
 
   Future<void> _callNumber(String number) async {
     print("Attempting to call number: $number");
@@ -73,19 +108,63 @@ class _MapPageState extends State<MapPage> {
     ),
   ];
 
+  // helpLines
+  static const LatLng helpline1 = LatLng(42.382830, -72.520950); // 358 N Pleasant St.
+  static const LatLng helpline2 = LatLng(42.3895, -72.5198); // Baker House
+  static const LatLng helpline3 = LatLng(42.340382, -72.496819); // Bartlett- WestSide
+  //static const LatLng helpline4 = LatLng(42., -72.); // Berkshire DC
+  // static const LatLng helpline5 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline6 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline7 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline8 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline9 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline10 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline11 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline12 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline13 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline14 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline15 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline16 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline17 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline18 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline19 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline20 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline21 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline22 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline23 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline24 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline25 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline26 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline27 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline28 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline29 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline30 = LatLng(42., -72.); // Baker House
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
             children: [
 
-              GoogleMap(
-                initialCameraPosition: CameraPosition(target: _pGooglePlex, zoom: 14),
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                onMapCreated: (GoogleMapController controller) { // Add this
-                  mapController = controller;
-                },
+              SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: currentLocation == null ? Center(child: Text("Loading..."),) : GoogleMap(
+                  initialCameraPosition: CameraPosition(target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!), zoom: 15),
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  onMapCreated: (GoogleMapController controller) {
+                    mapController = controller;
+                    print("Map Controller created");
+                  },
+                  markers: {
+                    Marker(
+                      markerId: MarkerId("358 N Pleasant St."),
+                      icon: BitmapDescriptor.defaultMarker,
+                      position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                    ),
+                  },
+                ),
               ),
               // Search bar at the top with padding
               Positioned(
@@ -140,49 +219,6 @@ class _MapPageState extends State<MapPage> {
                 ),
               ),
 
-              // Button at the bottom
-              // Positioned(
-              //   bottom: 32,
-              //   left: 16,
-              //   right: 16,
-              //   child: ElevatedButton(
-              //     onPressed: () {
-              //       // Add your button action here
-              //     },
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: Colors.blue,
-              //       foregroundColor: Colors.white,
-              //       padding: const EdgeInsets.symmetric(vertical: 16),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(30),
-              //       ),
-              //       elevation: 5,
-              //     ),
-              //     child: TextField(
-              //       decoration: InputDecoration(
-              //         hintText: 'SOS',
-              //         hintStyle: const TextStyle(
-              //           fontSize: 13,
-              //           fontWeight: FontWeight.normal,
-              //           fontFamily: 'Adam',
-              //         ),
-              //         border: InputBorder.none,
-              //         contentPadding: const EdgeInsets.symmetric(
-              //           horizontal: 20,
-              //           vertical: 15,
-              //         ),
-              //         prefixIcon: Container(
-              //           padding: const EdgeInsets.all(10),
-              //           child: const Icon(
-              //             Icons.phone,
-              //             color: Colors.black,
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -198,17 +234,37 @@ class _MapPageState extends State<MapPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.circular(40),
-                        color: Colors.red,
+                        color: HexColor("#881C1C"),
                       ),
                       child: Align(
                         alignment: Alignment.center,
-                        child: Text(
-                          "SOS",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Adam",
-                          ),
+                        child:
+                        Row(
+                          children: [
+                            SizedBox(width: 20,),
+
+                            Align(
+                              alignment: Alignment.center,
+                              child: Image.asset(
+                                  "lib/icons/call.png",
+                                height: 40,
+                              ),
+                            ),
+
+                            SizedBox(width: 85,),
+
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "SOS",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Adam",
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

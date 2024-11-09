@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:safesteps/auth/authcontroller.dart';
 import 'package:safesteps/auth/login.dart';
-import 'package:safesteps/auth/signup.dart';
-import 'package:safesteps/main_screens/map_page.dart';
 
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,  // Use this
