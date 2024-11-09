@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
@@ -10,6 +8,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
 import '../auth/login.dart';
+import 'dart:async';
+import 'package:safesteps/main_screens/umass_pdf_page.dart';
+import 'package:telephony_sms/telephony_sms.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -38,6 +39,8 @@ class _MapPageState extends State<MapPage> {
   List<PlaceSuggestion> _suggestions = [];
   bool _showSuggestions = false;
   Timer? _debounce;
+
+  final telephonySMS = TelephonySMS();
 
   Future<void> loadCustomIcon() async {
     BitmapDescriptor.asset(
@@ -113,7 +116,11 @@ class _MapPageState extends State<MapPage> {
         'No Internet? View a pdf which shows all the help phone locations in UMass around you.',
             () {
           print("View Map tapped");
-          // Navigator logic here
+          Get.to(
+                () => const PdfViewerPage(),
+            transition: Transition.fade,
+            duration: const Duration(milliseconds: 400),
+          );
         }
     ),
     DrawerItem(
@@ -182,6 +189,33 @@ class _MapPageState extends State<MapPage> {
   static const LatLng helpline50 = LatLng(42.3903742, -72.5242077); // Health Services – Main Entrance
   static const LatLng helpline51 = LatLng(42.387095, -72.526445); // Herter – Haigis Mall @ Bus Stop
   static const LatLng helpline52 = LatLng(42.390946, -72.545321); // ILC East – Second Floor
+  // static const LatLng helpline53 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline54 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline55 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline56 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline57 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline58 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline59 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline60 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline61 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline62 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline63 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline64 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline65 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline66 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline67 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline68 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline69 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline70 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline71 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline72 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline73 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline74 = LatLng(42., -72.); // Baker House
+  // static const LatLng helpline75 = LatLng(42., -72.); // Baker House
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -683,6 +717,9 @@ class _MapPageState extends State<MapPage> {
                         );
                         await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
                       }
+
+                      await telephonySMS.requestPermission();
+                      await telephonySMS.sendSMS(phone: "4132756640", message: "MESSAGE");
 
                       await call('911');
                     },
