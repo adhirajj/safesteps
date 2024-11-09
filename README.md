@@ -13,7 +13,8 @@ SafeStep is a campus safety companion app designed to enhance student security b
 - **Turn-by-Turn Directions**: Users can get directions to the closest HELP phone with a single tap, using geolocation to guide them directly to the nearest station in emergencies.
 
 ### Virtual Escort
-- **Walk with Friends or Campus Safety**: Share your live location with friends, family, or campus security for a virtual escort on your route.
+- **Walk with Friends and Family**: Share your live location with friends and family for a virtual escort on your route.
+- **Request an Escort from Campus Security**: Call a UMass security professional directly through the app to escort you in person to your destination, adding an extra layer of security and peace of mind.
 - **Check-in Notifications**: Set periodic check-ins that trigger notifications if missed, automatically sending an alert to a designated contact or campus safety if needed.
 
 ### Real-Time Emergency Alerts
@@ -36,3 +37,16 @@ SafeStep is a campus safety companion app designed to enhance student security b
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/username/SafeStep.git
+
+## Technologies
+1. Flutter & Dart: For cross-platform mobile development.
+2. Firebase Authentication & Firestore: Manages user authentication and data storage.
+3. Google Maps API: Powers real-time map and location features.
+4. GetX: Handles state management and navigation.
+
+SafeStep is more than just a map – it’s a comprehensive safety companion tailored to campus life, providing students and campus security with the tools they need to ensure everyone gets home safely.
+
+## Contact
+For questions or feedback, contact:
+- Advait Bharadwaj - abharadwaj@umass.edu
+- Adhiraj Chadha - adhirajchadh@umass.edu
