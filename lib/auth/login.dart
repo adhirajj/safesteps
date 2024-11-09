@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
@@ -20,6 +21,18 @@ class _LoginPageState extends State<LoginPage> {
   final authenticationController = Get.find<AuthenticationController>();
   bool _obscureText = true;
   bool showProgressBar = false;
+  var isLogin = false;
+  var auth = FirebaseAuth.instance;
+
+  checkIfLogin() async{
+    auth.authStateChanges().listen((User? user) {
+      if(user != null && mounted){
+        setState(() {
+          isLogin = true;
+        });
+      }
+    });
+  }
 
   // text editing controllers
   TextEditingController emailTextEditingController = TextEditingController();
@@ -36,6 +49,12 @@ class _LoginPageState extends State<LoginPage> {
       return true;
     }
     return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfLogin();
   }
 
   @override
