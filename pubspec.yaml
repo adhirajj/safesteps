@@ -44,6 +44,8 @@ dependencies:
   firebase_analytics:
   cloud_firestore:
   google_maps_flutter:
+  location:
+  google_maps_flutter_ios:
 
 dev_dependencies:
   flutter_test:
