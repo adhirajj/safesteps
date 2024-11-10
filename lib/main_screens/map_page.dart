@@ -141,17 +141,17 @@ class _MapPageState extends State<MapPage> {
             await telephonySMS.requestPermission();
 
             await telephonySMS.sendSMS(phone: contact5!, message: "Live Location test");
-            print("First message sent");
-
-            await Future.delayed(Duration(seconds: 1)); // Add delay
-
-            await telephonySMS.sendSMS(phone: contact4!, message: "Live Location");
-            print("Second message sent");
-
-            await Future.delayed(Duration(seconds: 1)); // Add delay
-
-            await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
-            print("Third message sent");
+            // print("First message sent");
+            //
+            // await Future.delayed(Duration(seconds: 1)); // Add delay
+            //
+            // await telephonySMS.sendSMS(phone: contact4!, message: "Live Location");
+            // print("Second message sent");
+            //
+            // await Future.delayed(Duration(seconds: 1)); // Add delay
+            //
+            // await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
+            // print("Third message sent");
           } catch (e) {
             print("Error: $e");
           }
@@ -1253,16 +1253,16 @@ class _MapPageState extends State<MapPage> {
                         await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
                       }
 
-
+                      await call('911');
                       await telephonySMS.requestPermission();
                       await telephonySMS.sendSMS(phone: contact1!, message: "SOS");
-                      await call('911');
-
-
-                      await telephonySMS.sendSMS(phone: contact2!, message: "SOS");
-                      await telephonySMS.sendSMS(phone: contact3!, message: "SOS");
-
-                      await call('911');
+                      // await call('911');
+                      //
+                      //
+                      // await telephonySMS.sendSMS(phone: contact2!, message: "SOS");
+                      // await telephonySMS.sendSMS(phone: contact3!, message: "SOS");
+                      //
+                      // await call('911');
                     },
                     child: Container(
                       height: 70,
