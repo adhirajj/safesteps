@@ -59,6 +59,8 @@ class _MapPageState extends State<MapPage> {
   bool _showSuggestions = false;
   Timer? _debounce;
   bool _useSafePath = true;  // Default to safe path
+  String? _routeDuration;
+  int? _nearbyHelpPhones;
 
   final Telephony telephony = Telephony.instance;
 
@@ -90,13 +92,27 @@ class _MapPageState extends State<MapPage> {
 
   double calculateSafetyScore(LatLng point, List<LatLng> helpLines) {
     double safetyScore = 0;
-    final double MAX_SAFETY_DISTANCE = 30; // meters
+    final double MAX_SAFETY_DISTANCE = 40; // meters, increased range
+    final double MIN_SAFETY_DISTANCE = 15; // minimum distance from help phones
+    final double OPTIMAL_DISTANCE = 25; // optimal distance from help phones
 
     for (var helpLine in helpLines) {
       double distance = calculateDistance(point, helpLine);
+
       if (distance <= MAX_SAFETY_DISTANCE) {
-        // Higher score for closer help lines
-        safetyScore += 1 - (distance / MAX_SAFETY_DISTANCE);
+        // Create a bell curve effect centered around OPTIMAL_DISTANCE
+        if (distance < MIN_SAFETY_DISTANCE) {
+          // Too close to help phone (might be through a building)
+          safetyScore += 0.4;
+        } else if (distance <= OPTIMAL_DISTANCE) {
+          // Optimal range
+          safetyScore += 1.0 * (1 - (distance - MIN_SAFETY_DISTANCE) /
+              (OPTIMAL_DISTANCE - MIN_SAFETY_DISTANCE));
+        } else {
+          // Farther but still beneficial
+          safetyScore += 0.7 * (1 - (distance - OPTIMAL_DISTANCE) /
+              (MAX_SAFETY_DISTANCE - OPTIMAL_DISTANCE));
+        }
       }
     }
 
@@ -126,14 +142,16 @@ class _MapPageState extends State<MapPage> {
 
     // Parameters for path adjustment
     final double MAX_DEVIATION = 40; // Maximum meters of deviation allowed
-    final int INTERPOLATION_POINTS = 5; // Number of points to check between segments
+    final int INTERPOLATION_POINTS = 8; // Increased interpolation points
+    final double SMOOTHING_FACTOR = 0.8; // Factor for path smoothing
 
     for (int i = 0; i < originalPath.length - 1; i++) {
       LatLng start = originalPath[i];
       LatLng end = originalPath[i + 1];
 
       List<WeightedLatLng> candidates = [];
-      candidates.add(WeightedLatLng(start, calculateSafetyScore(start, helpLines)));
+      double prevPointSafety = safePath.isEmpty ? 0 :
+      calculateSafetyScore(safePath.last, helpLines);
 
       // Generate intermediate points
       for (int j = 1; j < INTERPOLATION_POINTS - 1; j++) {
@@ -169,9 +187,21 @@ class _MapPageState extends State<MapPage> {
 
         return currScore > nextScore ? curr : next;
       });
-
       safePath.add(bestPoint.point);
       totalSafety += bestPoint.weight;
+
+      // Add path smoothing
+      if (safePath.isNotEmpty) {
+        LatLng smoothedPoint = LatLng(
+            safePath.last.latitude * SMOOTHING_FACTOR +
+                bestPoint.point.latitude * (1 - SMOOTHING_FACTOR),
+            safePath.last.longitude * SMOOTHING_FACTOR +
+                bestPoint.point.longitude * (1 - SMOOTHING_FACTOR)
+        );
+        safePath.add(smoothedPoint);
+      } else {
+        safePath.add(bestPoint.point);
+      }
     }
 
     safePath.add(originalPath.last);
@@ -1345,6 +1375,8 @@ class _MapPageState extends State<MapPage> {
                                       _polylines.clear();
                                       _suggestions = [];
                                       _showSuggestions = false;
+                                      _routeDuration = null;
+                                      _nearbyHelpPhones = null;  // Add this
                                     });
                                   },
                                 ),
@@ -1427,11 +1459,19 @@ class _MapPageState extends State<MapPage> {
                     setState(() {
                       _useSafePath = value;
                       // Recalculate route if there's a destination
+                      // Recalculate route if there's a destination
                       if (destinationMarker != null && currentLocation != null) {
-                        getDirections(
-                          LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-                          destinationMarker!.position,
-                        );
+                        if (value) {
+                          getSafeDirections(
+                            LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                            destinationMarker!.position,
+                          );
+                        } else {
+                          getRegularDirections(
+                            LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                            destinationMarker!.position,
+                          );
+                        }
                       }
                     });
                   },
@@ -1442,153 +1482,219 @@ class _MapPageState extends State<MapPage> {
 
               Align(
                 alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 40),
-                  child: GestureDetector(
-                    onTap: () async {
-                      //SOS functionality
-                      print("SOS pushed");
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
 
-                      String locationLink = "";
-                      if (currentLocation != null) {
-                        locationLink = "http://maps.google.com/maps?q=${currentLocation!.latitude},${currentLocation!.longitude}";
-                      }
-
-                      String sosMessage = """EMERGENCY: I need help! 
-                      Location: $locationLink 
-                      Time: ${DateTime.now()}""";
-
-                      try {
-                        // Make emergency call
-                        await call('911');
-
-                        if (Platform.isAndroid) {
-                          // Request SMS permissions
-                          bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
-
-                          if (permissionsGranted == true) {
-                            // Send SMS to all emergency contacts
-                            if (contact1 != null) {
-                              await telephony.sendSms(
-                                to: contact1!,
-                                message: sosMessage,
-                              );
-                            }
-                            if (contact2 != null) {
-                              await telephony.sendSms(
-                                to: contact2!,
-                                message: sosMessage,
-                              );
-                            }
-                            if (contact3 != null) {
-                              await telephony.sendSms(
-                                to: contact3!,
-                                message: sosMessage,
-                              );
-                            }
-                          }
-                        } else if (Platform.isIOS) {
-                          // For iOS, use URL scheme
-                          List<String> recipients = [];
-                          if (contact1 != null) recipients.add(contact1!);
-                          if (contact2 != null) recipients.add(contact2!);
-                          if (contact3 != null) recipients.add(contact3!);
-
-                          // Format numbers for iOS
-                          String recipientsString = '';
-                          if (recipients.isNotEmpty) {
-                            recipientsString = recipients[0];
-                            for (int i = 1; i < recipients.length; i++) {
-                              recipientsString += ';${recipients[i]}';
-                            }
-                          }
-
-                          // Create properly formatted iOS SMS URI
-                          final smsUri = Uri.parse(
-                              'sms:$recipientsString${Uri.encodeFull('&body=$sosMessage')}'
-                          );
-
-                          print("SMS URI: $smsUri"); // Debug print
-
-                          if (await canLaunchUrl(smsUri)) {
-                            await launchUrl(smsUri, mode: LaunchMode.platformDefault);
-                          }
-                        }
-
-                        // Show confirmation
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Emergency services contacted and location shared',
-                                style: TextStyle(
-                                  fontFamily: 'Adam',
-                                  fontSize: 12,
-                                ),
-                              ),
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        print("Error in SOS: $e");
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Error sending emergency messages. Please dial 911 directly.',
-                                style: TextStyle(
-                                  fontFamily: 'Adam',
-                                  fontSize: 12,
-                                ),
-                              ),
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    child: Container(
-                      height: 70,
-                      width: 350,
+                    if (_routeDuration != null) Container(
+                      margin: EdgeInsets.only(bottom: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(40),
-                        color: HexColor("#881C1C"),
+                        color: HexColor("B7A3A3").withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      child: Align(
-                        //alignment: Alignment.center,
-                        child:
-                        Row(
-                          children: [
-                            SizedBox(width: 20,),
-
-                            Align(
-                              alignment: Alignment.center,
-                              child: Image.asset(
-                                  "lib/icons/call.png",
-                                height: 40,
-                              ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.directions_walk,
+                            color: Colors.black,
+                            size: 20,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            _routeDuration!,
+                            style: TextStyle(
+                              fontFamily: 'Adam',
+                              fontSize: 14,
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
                             ),
-
-                            SizedBox(width: 85,),
-
-                            Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "SOS",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "Adam",
-                                ),
-                              ),
+                          ),
+                          SizedBox(width: 16),
+                          Image.asset(
+                            "lib/icons/call.png",
+                            height: 20,
+                            color: Colors.black,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            "${_nearbyHelpPhones ?? 0}",
+                            style: TextStyle(
+                              fontFamily: 'Adam',
+                              fontSize: 14,
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          if (_useSafePath) ...[
+                            SizedBox(width: 8),
+                            Icon(
+                              Icons.shield,
+                              color: HexColor("#881C1C"),
+                              size: 20,
                             ),
                           ],
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 40),
+                      child: GestureDetector(
+                        onTap: () async {
+                          //SOS functionality
+                          print("SOS pushed");
+
+                          String locationLink = "";
+                          if (currentLocation != null) {
+                            locationLink = "http://maps.google.com/maps?q=${currentLocation!.latitude},${currentLocation!.longitude}";
+                          }
+
+                          String sosMessage = """EMERGENCY: I need help! 
+                          Location: $locationLink 
+                          Time: ${DateTime.now()}""";
+
+                          try {
+                            // Make emergency call
+                            await call('911');
+
+                            if (Platform.isAndroid) {
+                              // Request SMS permissions
+                              bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+
+                              if (permissionsGranted == true) {
+                                // Send SMS to all emergency contacts
+                                if (contact1 != null) {
+                                  await telephony.sendSms(
+                                    to: contact1!,
+                                    message: sosMessage,
+                                  );
+                                }
+                                if (contact2 != null) {
+                                  await telephony.sendSms(
+                                    to: contact2!,
+                                    message: sosMessage,
+                                  );
+                                }
+                                if (contact3 != null) {
+                                  await telephony.sendSms(
+                                    to: contact3!,
+                                    message: sosMessage,
+                                  );
+                                }
+                              }
+                            } else if (Platform.isIOS) {
+                              // For iOS, use URL scheme
+                              List<String> recipients = [];
+                              if (contact1 != null) recipients.add(contact1!);
+                              if (contact2 != null) recipients.add(contact2!);
+                              if (contact3 != null) recipients.add(contact3!);
+
+                              // Format numbers for iOS
+                              String recipientsString = '';
+                              if (recipients.isNotEmpty) {
+                                recipientsString = recipients[0];
+                                for (int i = 1; i < recipients.length; i++) {
+                                  recipientsString += ';${recipients[i]}';
+                                }
+                              }
+
+                              // Create properly formatted iOS SMS URI
+                              final smsUri = Uri.parse(
+                                  'sms:$recipientsString${Uri.encodeFull('&body=$sosMessage')}'
+                              );
+
+                              print("SMS URI: $smsUri"); // Debug print
+
+                              if (await canLaunchUrl(smsUri)) {
+                                await launchUrl(smsUri, mode: LaunchMode.platformDefault);
+                              }
+                            }
+
+                            // Show confirmation
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Emergency services contacted and location shared',
+                                    style: TextStyle(
+                                      fontFamily: 'Adam',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print("Error in SOS: $e");
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Error sending emergency messages. Please dial 911 directly.',
+                                    style: TextStyle(
+                                      fontFamily: 'Adam',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: Container(
+                          height: 70,
+                          width: 350,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(40),
+                            color: HexColor("#881C1C"),
+                          ),
+                          child: Align(
+                            //alignment: Alignment.center,
+                            child:
+                            Row(
+                              children: [
+                                SizedBox(width: 20,),
+
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Image.asset(
+                                      "lib/icons/call.png",
+                                    height: 40,
+                                  ),
+                                ),
+
+                                SizedBox(width: 85,),
+
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "SOS",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "Adam",
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               )
             ],
@@ -1714,40 +1820,6 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> getSafeDirections(LatLng origin, LatLng destination) async {
-    try {
-      final String googleApiKey = API;
-      final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
-      final response = await http.get(
-          Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['routes'] != null && data['routes'].isNotEmpty) {
-          final List<LatLng> originalPoints = decodePolyline(data['routes'][0]['overview_polyline']['points']);
-
-          final helpLines = getAllHelpLineLocations();
-          final SafePathResult safePathResult = findSafePath(originalPoints, helpLines);
-
-          setState(() {
-            _polylines.clear();
-            _polylines.add(
-              Polyline(
-                polylineId: PolylineId('route'),
-                points: safePathResult.path,
-                color: Colors.blue,
-                width: 5,
-              ),
-            );
-          });
-        }
-      }
-    } catch (e) {
-      print('Error getting directions: $e');
-    }
-  }
-
   Future<void> getRegularDirections(LatLng origin, LatLng destination) async {
     try {
       final String googleApiKey = API;
@@ -1759,14 +1831,16 @@ class _MapPageState extends State<MapPage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['routes'] != null && data['routes'].isNotEmpty) {
-          final points = decodePolyline(data['routes'][0]['overview_polyline']['points']);
+          List<LatLng> pathPoints = decodePolyline(data['routes'][0]['overview_polyline']['points']);
 
           setState(() {
+            _routeDuration = data['routes'][0]['legs'][0]['duration']['text'];
+            _nearbyHelpPhones = countNearbyHelpPhones(pathPoints);
             _polylines.clear();
             _polylines.add(
               Polyline(
                 polylineId: PolylineId('route'),
-                points: points,
+                points: pathPoints,
                 color: Colors.blue,
                 width: 5,
               ),
@@ -1775,7 +1849,81 @@ class _MapPageState extends State<MapPage> {
         }
       }
     } catch (e) {
-      print('Error getting directions: $e');
+      print('Error getting regular directions: $e');
+    }
+  }
+
+  Future<void> getSafeDirections(LatLng origin, LatLng destination) async {
+    try {
+      final String googleApiKey = API;
+      final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+
+      // Request alternative routes with waypoints for safer path
+      final response = await http.get(
+          Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}'
+              '&destination=${destination.latitude},${destination.longitude}'
+              '&mode=walking'
+              '&alternatives=true'
+              '&key=$googleApiKey')
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          // Process each alternative route
+          List<Map<String, dynamic>> routeOptions = [];
+
+          for (var route in data['routes']) {
+            List<LatLng> pathPoints = decodePolyline(route['overview_polyline']['points']);
+            int helpPhoneCount = countNearbyHelpPhones(pathPoints);
+            int duration = route['legs'][0]['duration']['value']; // duration in seconds
+
+            routeOptions.add({
+              'points': pathPoints,
+              'helpPhones': helpPhoneCount,
+              'duration': duration,
+              'durationText': route['legs'][0]['duration']['text']
+            });
+          }
+
+          // Sort routes by help phone count, then by duration
+          routeOptions.sort((a, b) {
+            int phoneCompare = b['helpPhones'].compareTo(a['helpPhones']);
+            if (phoneCompare != 0) return phoneCompare;
+            return a['duration'].compareTo(b['duration']);
+          });
+
+          // Select the route with the most help phones
+          // that isn't more than 6 minutes longer than the shortest route
+          int shortestDuration = routeOptions[0]['duration'];
+          Map<String, dynamic>? selectedRoute;
+
+          for (var route in routeOptions) {
+            if (route['duration'] - shortestDuration <= 360) { // 6 minutes = 360 seconds
+              selectedRoute = route;
+              break;
+            }
+          }
+
+          selectedRoute ??= routeOptions[0]; // Fallback to shortest route if no suitable route found
+
+          setState(() {
+            _routeDuration = selectedRoute!['durationText'];
+            _nearbyHelpPhones = selectedRoute['helpPhones'];
+            _polylines.clear();
+            _polylines.add(
+              Polyline(
+                polylineId: PolylineId('route'),
+                points: selectedRoute['points'],
+                color: Colors.blue,
+                width: 5,
+              ),
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print('Error getting safe directions: $e');
     }
   }
 
@@ -1854,6 +2002,21 @@ class _MapPageState extends State<MapPage> {
         print('Error getting place suggestions: $e');
       }
     });
+  }
+
+  int countNearbyHelpPhones(List<LatLng> path) {
+    Set<LatLng> nearbyHelpPhones = {};  // Using Set to avoid duplicates
+    final double MAX_DISTANCE = 50; // meters
+
+    for (LatLng point in path) {
+      for (LatLng helpPhone in getAllHelpLineLocations()) {
+        if (calculateDistance(point, helpPhone) <= MAX_DISTANCE) {
+          nearbyHelpPhones.add(helpPhone);
+        }
+      }
+    }
+
+    return nearbyHelpPhones.length;
   }
 
   Future<void> _handleSuggestionTap(PlaceSuggestion suggestion) async {
