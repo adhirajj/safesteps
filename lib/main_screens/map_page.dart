@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
+import '../auth/authcontroller.dart';
 import '../auth/login.dart';
 import 'dart:async';
 import 'package:safesteps/main_screens/umass_pdf_page.dart';
@@ -41,6 +43,14 @@ class _MapPageState extends State<MapPage> {
   Timer? _debounce;
 
   final telephonySMS = TelephonySMS();
+
+  Future<List<String?>> contacts = AuthenticationController.authController.getUserContacts();
+  String? contact1;
+  String? contact2;
+  String? contact3;
+  String? contact4;
+  String? contact5;
+  String? contact6;
 
   Future<void> loadCustomIcon() async {
     BitmapDescriptor.asset(
@@ -85,6 +95,17 @@ class _MapPageState extends State<MapPage> {
     super.initState();
     getCurrentLocation();
     loadCustomIcon();
+    
+    contacts.then((onValue) => {
+      setState(() {
+        contact1 = onValue[0];
+        contact2 = onValue[1];
+        contact3 = onValue[2];
+        contact4 = onValue[3];
+        contact5 = onValue[4];
+        contact6 = onValue[5];
+      })
+    });
   }
 
   call(phoneNo) async {
@@ -99,9 +120,11 @@ class _MapPageState extends State<MapPage> {
     DrawerItem(
         'Share Live Location',
         'This sends your live location to contacts of your choice',
-            () {
-          print("Share Location tapped");
-          // Navigator logic here
+            () async {
+              await telephonySMS.requestPermission();
+              await telephonySMS.sendSMS(phone: contact4!, message: "Live Location");
+              await telephonySMS.sendSMS(phone: contact5!, message: "Live Location");
+              await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
         }
     ),
     DrawerItem(
@@ -115,7 +138,6 @@ class _MapPageState extends State<MapPage> {
         'View UMass Map',
         'No Internet? View a pdf which shows all the help phone locations in UMass around you.',
             () {
-          print("View Map tapped");
           Get.to(
                 () => const PdfViewerPage(),
             transition: Transition.fade,
@@ -718,8 +740,15 @@ class _MapPageState extends State<MapPage> {
                         await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
                       }
 
+                      await call('911');
+
                       await telephonySMS.requestPermission();
-                      await telephonySMS.sendSMS(phone: "4132756640", message: "MESSAGE");
+                      await telephonySMS.sendSMS(phone: contact1!, message: "SOS");
+                      await call('911');
+
+
+                      await telephonySMS.sendSMS(phone: contact2!, message: "SOS");
+                      await telephonySMS.sendSMS(phone: contact3!, message: "SOS");
 
                       await call('911');
                     },
@@ -843,7 +872,7 @@ class _MapPageState extends State<MapPage> {
     if (currentLocation == null) return;
 
     try {
-      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String googleApiKey = 'API-Key';
       final String baseUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
       final response = await http.get(
           Uri.parse('$baseUrl?query=$query&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&key=$googleApiKey')
@@ -891,7 +920,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> getDirections(LatLng origin, LatLng destination) async {
     try {
-      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String googleApiKey = 'API-Key';
       final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
       final response = await http.get(
           Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
@@ -963,7 +992,7 @@ class _MapPageState extends State<MapPage> {
       }
 
       try {
-        final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+        final String googleApiKey = 'API-Key';
         final String baseUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
         final response = await http.get(
             Uri.parse('$baseUrl?input=$input&key=$googleApiKey&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&components=country:us')
@@ -991,7 +1020,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _handleSuggestionTap(PlaceSuggestion suggestion) async {
     try {
-      final String googleApiKey = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
+      final String googleApiKey = 'API-Key';
       final String baseUrl = 'https://maps.googleapis.com/maps/api/place/details/json';
       final response = await http.get(
           Uri.parse('$baseUrl?place_id=${suggestion.placeId}&key=$googleApiKey')
