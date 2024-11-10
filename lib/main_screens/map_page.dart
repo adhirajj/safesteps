@@ -4,6 +4,7 @@ import 'package:flutter_color/flutter_color.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:safesteps/main_screens/edit_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'dart:math';
@@ -13,6 +14,8 @@ import '../auth/login.dart';
 import 'dart:async';
 import 'package:safesteps/main_screens/umass_pdf_page.dart';
 import 'package:telephony_sms/telephony_sms.dart';
+
+import '../global.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -149,8 +152,7 @@ class _MapPageState extends State<MapPage> {
         'Edit',
         'Edit your information, emergency contacts, and live location feature',
             () {
-          print("Edit tapped");
-          Get.to(() => const LoginPage(),
+          Get.to(() => const EditPage(),
               transition: Transition.fade,
               duration: const Duration(milliseconds: 400)
           );
@@ -211,33 +213,79 @@ class _MapPageState extends State<MapPage> {
   static const LatLng helpline50 = LatLng(42.3903742, -72.5242077); // Health Services – Main Entrance
   static const LatLng helpline51 = LatLng(42.387095, -72.526445); // Herter – Haigis Mall @ Bus Stop
   static const LatLng helpline52 = LatLng(42.390946, -72.545321); // ILC East – Second Floor
-  // static const LatLng helpline53 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline54 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline55 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline56 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline57 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline58 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline59 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline60 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline61 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline62 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline63 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline64 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline65 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline66 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline67 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline68 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline69 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline70 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline71 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline72 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline73 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline74 = LatLng(42., -72.); // Baker House
-  // static const LatLng helpline75 = LatLng(42., -72.); // Baker House
-
-
-
-
+  static const LatLng helpline53 = LatLng(42.391435, -72.526266); // ILC North – First Floor
+  static const LatLng helpline54 = LatLng(42.390866, -72.526293); // ILC West – Second Floor
+  static const LatLng helpline55 = LatLng(42.392359, -72.525210); // ISB East
+  static const LatLng helpline56 = LatLng(42.392806, -72.524902); // ISB East – Second Floor
+  static const LatLng helpline57 = LatLng(42.392449, -72.524736); // ISB West
+  static const LatLng helpline58 = LatLng(42.3841787, -72.5337553); // James House
+  static const LatLng helpline59 = LatLng(42.3818423, -72.5312886); // John Adams Tower
+  static const LatLng helpline60 = LatLng(42.382014, -72.528897); // John Q Adams Tower – East Side
+  static const LatLng helpline61 = LatLng(42.381636, -72.528923); // John Q Adams Tower – West Side
+  static const LatLng helpline62 = LatLng(42.3955609, -72.5270909); // Johnson House
+  static const LatLng helpline63 = LatLng(42.3840782, -72.5322115); // Kennedy Tower
+  static const LatLng helpline64 = LatLng(42.3937843, -72.5282655); // Knowlton House
+  static const LatLng helpline65 = LatLng(42.3951734, -72.5283311); // Leach House
+  static const LatLng helpline66 = LatLng(42.3951096, -72.5265239); // Lewis House
+  static const LatLng helpline67 = LatLng(42.392755, -72.524125); // Life Science Lab – East Side
+  static const LatLng helpline68 = LatLng(42.391393, -72.523295); // Life Science Lab – West Side
+  static const LatLng helpline69 = LatLng(42.3870226, -72.5334561); // Linden
+  static const LatLng helpline70 = LatLng(42.3804494, -72.5353179); // Lot 22 East Side – University Dr.
+  static const LatLng helpline71 = LatLng(42.3989473, -72.5270459); // Lot 44 – South of Cashin
+  static const LatLng helpline72 = LatLng(42.394939, -72.520508); // Lot 44 to Lot 49 Pathway
+  static const LatLng helpline73 = LatLng(42.3991727, -72.5296641); // Lot 66 – North Side of Furcolo
+  static const LatLng helpline74 = LatLng(42.3855449, -72.5292336); // Lot 71 – Entrance to Whitmore
+  static const LatLng helpline75 = LatLng(42.382548, -72.5312017); // Mackimmie House – Front (East Side)
+  static const LatLng helpline76 = LatLng(42.382570, -72.529075); // Mackimmie House – Rear (West Side)
+  static const LatLng helpline77 = LatLng(42.3865975, -72.5268119); // Mahar Auditorium
+  static const LatLng helpline78 = LatLng(42.3875513, -72.5335576); // Maple
+  static const LatLng helpline79 = LatLng(42.3941624, -72.5270719); // Mary Lyon House
+  static const LatLng helpline80 = LatLng(42.3947356, -72.5140972); // Mather Admissions Building
+  static const LatLng helpline81 = LatLng(42.3793124, -72.5383609); // McGuirk Stadium – Lot 11
+  static const LatLng helpline82 = LatLng(42.398347, -72.523130); // McNamara – On Path to Lot 44
+  static const LatLng helpline83 = LatLng(42.3979153, -72.5236711); // McNamara House
+  static const LatLng helpline84 = LatLng(42.387815, -72.526936); // Memorial Hall/Herter – On Pathway Between
+  static const LatLng helpline85 = LatLng(42.384711, -72.5333494); // Melville House
+  static const LatLng helpline86 = LatLng(42.3820512, -72.5333725); // Moore House
+  static const LatLng helpline87 = LatLng(42.3898044, -72.5273291); // Morrill – Between IV &II
+  static const LatLng helpline88 = LatLng(42.390008, -72.533758); // Mullins Center – Northwest Team Entrance
+  static const LatLng helpline89 = LatLng(42.388718, -72.533102); // Mullins Center – Southwest Media Entrance
+  static const LatLng helpline90 = LatLng(42.390463, -72.5364027); // Mullins Practice Rink – Southeast Side
+  static const LatLng helpline91 = LatLng(42.397496, -72.5266631); // North A
+  static const LatLng helpline92 = LatLng(42.3967237, -72.526758); // North B
+  static const LatLng helpline93 = LatLng(42.3976485, -72.5276753); // North C
+  static const LatLng helpline94 = LatLng(42.3968141, -72.5277259); // North D
+  static const LatLng helpline95 = LatLng(42.39346, -72.5302499); // North Pleasant St. Bus Stop
+  static const LatLng helpline96 = LatLng(42.3873358, -72.5327575); // Oak
+  static const LatLng helpline97 = LatLng(42.3940649, -72.5241485); // Observatory
+  static const LatLng helpline98 = LatLng(42.3950775, -72.5163369); // Olympia Drive – Lot 13
+  static const LatLng helpline99 = LatLng(42.3903667, -72.5218096); // Orchard Hill Dr
+  static const LatLng helpline100 = LatLng(42.3929109, -72.5228112); // Orchard Hill – Lot 49
+  static const LatLng helpline101 = LatLng(42.3817924, -72.5293965); // Patterson House – Front (East Side)
+  static const LatLng helpline102 = LatLng(42.381342, -72.528328); // Patterson House – Rear (West Side)
+  static const LatLng helpline103 = LatLng(42.3814007, -72.5333825); // Pierpont House
+  static const LatLng helpline104 = LatLng(42.3840663, -72.5315037); // Prince House
+  static const LatLng helpline105 = LatLng(42.389183, -72.532211); // Rec Center East
+  static const LatLng helpline106 = LatLng(42.388406, -72.531876); // Rec Center West
+  static const LatLng helpline107 = LatLng(42.3850288, -72.5264573); // Robsham Visitors’ Center
+  static const LatLng helpline108 = LatLng(42.3893646, -72.5324199); // South College
+  static const LatLng helpline109 = LatLng(42.391832, -72.524798); // Skinner Hall East
+  static const LatLng helpline110 = LatLng(42.391311, -72.524647); // Skinner Hall West
+  static const LatLng helpline111 = LatLng(42.3553205, -72.6591414); // Student Union – Southwest Corner
+  static const LatLng helpline112 = LatLng(42.3843426, -72.5328205); // Thoreau House
+  static const LatLng helpline113 = LatLng(42.3967484, -72.5297223); // Totman – Lot 27
+  static const LatLng helpline114 = LatLng(42.3774694, -72.5343655); // University Drive – Bike Path near Dallas Mall
+  static const LatLng helpline115 = LatLng(42.384017, -72.531865); // University Drive – Bike Path near James
+  static const LatLng helpline116 = LatLng(42.389330, -72.518124); // Van Meter House – East Side
+  static const LatLng helpline117 = LatLng(42.390379, -72.518504); // Van Meter House – West Side
+  static const LatLng helpline118 = LatLng(42.3815742, -72.5319432); // Washington Tower
+  static const LatLng helpline119 = LatLng(42.3915267, -72.5220457); // Webster House
+  static const LatLng helpline120 = LatLng(42.3886948, -72.5220121); // Wheeler House – East
+  static const LatLng helpline121 = LatLng(42.389207, -72.521356); // Wheeler House – West
+  static const LatLng helpline122 = LatLng(42.3861466, -72.5274466); // Whitmore – East Side Main Entrance
+  static const LatLng helpline123 = LatLng(42.3902954, -72.5263111); // Wilder – East Side
+  static const LatLng helpline124 = LatLng(42.3906977, -72.5202421); // Windmill Lane - North Side
+  static const LatLng helpline125 = LatLng(42.3935899, -72.526872); // Worcester DC ATM
 
   @override
   Widget build(BuildContext context) {
@@ -582,6 +630,444 @@ class _MapPageState extends State<MapPage> {
                       position: helpline52,
                     ),
 
+                    Marker(
+                      markerId: MarkerId("ILC North – First Floor"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline53,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ILC West – Second Floor"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline54,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ISB East"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline55,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ISB East – Second Floor"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline56,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("ISB West"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline57,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("James House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline58,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("John Adams Tower"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline59,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("John Q Adams Tower – East Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline60,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("John Q Adams Tower – West Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline61,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Johnson House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline62,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Kennedy Tower"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline63,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Knowlton House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline64,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Leach House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline65,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Lewis House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline66,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Life Science Lab – East Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline67,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Life Science Lab – West Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline68,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Linden"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline69,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Lot 22 East Side – University Dr."),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline70,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Lot 44 – South of Cashin"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline71,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Lot 44 to Lot 49 Pathway"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline72,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Lot 66 – North Side of Furcolo"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline73,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Lot 71 – Entrance to Whitmore"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline74,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mackimmie House – Front (East Side)"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline75,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mackimmie House – Rear (West Side)"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline76,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mahar Auditorium"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline77,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Maple"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline78,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mary Lyon House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline79,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mather Admissions Building"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline80,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("McGuirk Stadium – Lot 11"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline81,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("McNamara – On Path to Lot 44"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline82,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("McNamara House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline83,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Memorial Hall/Herter – On Pathway Between"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline84,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Melville House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline85,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Moore House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline86,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Morrill – Between IV &II"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline87,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mullins Center – Northwest Team Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline88,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mullins Center – Southwest Media Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline89,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Mullins Practice Rink – Southeast Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline90,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("North A"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline91,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("North B"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline92,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("North C"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline93,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("North D"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline94,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("North Pleasant St. Bus Stop"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline95,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Oak"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline96,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Observatory"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline97,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Olympia Drive – Lot 13"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline98,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Orchard Hill Dr"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline99,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Orchard Hill – Lot 49"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline100,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Patterson House – Front (East Side)"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline101,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Patterson House – Rear (West Side)"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline102,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Pierpont House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline103,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Prince House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline104,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Rec Center East"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline105,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Rec Center West"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline106,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Robsham Visitors' Center"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline107,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("South College"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline108,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Skinner Hall East"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline109,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Skinner Hall West"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline110,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Student Union – Southwest Corner"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline111,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Thoreau House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline112,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Totman – Lot 27"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline113,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("University Drive – Bike Path near Dallas Mall"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline114,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("University Drive – Bike Path near James"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline115,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Van Meter House – East Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline116,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Van Meter House – West Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline117,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Washington Tower"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline118,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Webster House"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline119,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Wheeler House – East"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline120,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Wheeler House – West"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline121,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Whitmore – East Side Main Entrance"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline122,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Wilder – East Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline123,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Windmill Lane - North Side"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline124,
+                    ),
+
+                    Marker(
+                      markerId: MarkerId("Worcester DC ATM"),
+                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                      position: helpline125,
+                    ),
+
                     //////////
                     if (destinationMarker != null) destinationMarker!,
                     /////////
@@ -740,7 +1226,6 @@ class _MapPageState extends State<MapPage> {
                         await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
                       }
 
-                      await call('911');
 
                       await telephonySMS.requestPermission();
                       await telephonySMS.sendSMS(phone: contact1!, message: "SOS");
@@ -872,7 +1357,7 @@ class _MapPageState extends State<MapPage> {
     if (currentLocation == null) return;
 
     try {
-      final String googleApiKey = 'API-Key';
+      final String googleApiKey = API;
       final String baseUrl = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
       final response = await http.get(
           Uri.parse('$baseUrl?query=$query&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&key=$googleApiKey')
@@ -920,7 +1405,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> getDirections(LatLng origin, LatLng destination) async {
     try {
-      final String googleApiKey = 'API-Key';
+      final String googleApiKey = API;
       final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
       final response = await http.get(
           Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
@@ -992,7 +1477,7 @@ class _MapPageState extends State<MapPage> {
       }
 
       try {
-        final String googleApiKey = 'API-Key';
+        final String googleApiKey = API;
         final String baseUrl = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
         final response = await http.get(
             Uri.parse('$baseUrl?input=$input&key=$googleApiKey&location=${currentLocation!.latitude},${currentLocation!.longitude}&radius=5000&components=country:us')
@@ -1020,7 +1505,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _handleSuggestionTap(PlaceSuggestion suggestion) async {
     try {
-      final String googleApiKey = 'API-Key';
+      final String googleApiKey = API;
       final String baseUrl = 'https://maps.googleapis.com/maps/api/place/details/json';
       final response = await http.get(
           Uri.parse('$baseUrl?place_id=${suggestion.placeId}&key=$googleApiKey')

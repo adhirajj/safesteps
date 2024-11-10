@@ -1,10 +1,1 @@
-
-// custom text field widget
-import 'package:flutter/cupertino.dart';
-
-double custom_height = 70;
-double custom_width = 20;
-
-//sizes
-
-int size = 10; //mention what it is being used for
+String API = 'AIzaSyC5piadXr_o6TTDRYRWz-3Wp1tOz1phAb4';
