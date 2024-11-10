@@ -44,9 +44,9 @@ class _ContactsPageState extends State<ContactsPage> {
     // final textColor = isDarkMode ? Colors.black : Colors.white;
     const textColor = Colors.black;
     return Scaffold(
-      backgroundColor: HexColor('C2ADAD'),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: HexColor('B7A3A3').withOpacity(0.9),
+        backgroundColor: HexColor('E3ADAD').withOpacity(0.9),
         automaticallyImplyLeading: false,
         toolbarHeight: 160,
         elevation: 0,
@@ -67,313 +67,338 @@ class _ContactsPageState extends State<ContactsPage> {
         ),
       ),
 
-      body: SingleChildScrollView(
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 50,),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              HexColor('E3ADAD').withOpacity(0.9),
+              HexColor('881C1C').withOpacity(0.9),
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 50,),
 
-              //Emergency SOS contacts
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Emergency Contacts",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 20,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                //Emergency SOS contacts
+                const Padding(
+                  padding: EdgeInsets.only(left: 45),
+                  child: Text(
+                    "Emergency Contacts",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 22,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "These are people we'll send a text alert to along with calling 911 if and when you press the SOS button",
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    letterSpacing: -1,
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                Padding(
+                  padding: EdgeInsets.only(left: 45),
+                  child: Text(
+                    "These are people we'll send a text alert to along with calling 911 if and when you press the SOS button",
+                    style: TextStyle(
+                      color: Colors.black54,
+                      letterSpacing: -1,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 15),
+                const SizedBox(height: 15),
 
-              //contact1
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Contact 1",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                //contact1
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text(
+                    "Contact 1",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              CustomTextFieldWidget(
-                editingController: contact1TextEditingController,
-                labelText: "",
-                //width: 75,
-              ),
+                SizedBox(height: 5,),
 
-              const SizedBox(height: 10,),
+                CustomTextFieldWidget(
+                  editingController: contact1TextEditingController,
+                  labelText: "",
+                  //width: 75,
+                ),
 
-              //contact2
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Contact 2",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                const SizedBox(height: 10,),
+
+                //contact2
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text(
+                    "Contact 2",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              CustomTextFieldWidget(
-                editingController: contact2TextEditingController,
-                labelText: "",
-                //width: 75,
-              ),
+                const SizedBox(height: 5,),
 
-              const SizedBox(height: 10,),
+                CustomTextFieldWidget(
+                  editingController: contact2TextEditingController,
+                  labelText: "",
+                  //width: 75,
+                ),
 
-              //contact3
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Contact 3",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                const SizedBox(height: 10,),
+
+                //contact3
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text(
+                    "Contact 3",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              CustomTextFieldWidget(
-                editingController: contact3TextEditingController,
-                labelText: "",
-                //width: 75,
-              ),
+                const SizedBox(height: 5,),
 
-              const SizedBox(height: 15,),
+                CustomTextFieldWidget(
+                  editingController: contact3TextEditingController,
+                  labelText: "",
+                  //width: 75,
+                ),
 
-              //Live Location contacts
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Live Location Contacts",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 20,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                const SizedBox(height: 15,),
+
+                //Live Location contacts
+                const Padding(
+                  padding: EdgeInsets.only(left: 45),
+                  child: Text(
+                    "Live Location Contacts",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 22,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "These are people we'll send your live location to on pressing the ShareLiveLocation Button",
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    letterSpacing: -1,
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                Padding(
+                  padding: EdgeInsets.only(left: 45),
+                  child: Text(
+                    "These are people we'll send your live location to on pressing the ShareLiveLocation Button",
+                    style: TextStyle(
+                      color: Colors.black54,
+                      letterSpacing: -1,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 15),
+                const SizedBox(height: 15),
 
-              //contact4
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Contact 1",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                //contact4
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text(
+                    "Contact 1",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              CustomTextFieldWidget(
-                editingController: contact4TextEditingController,
-                labelText: "",
-                //width: 75,
-              ),
+                const SizedBox(height: 5,),
 
-              const SizedBox(height: 10,),
+                CustomTextFieldWidget(
+                  editingController: contact4TextEditingController,
+                  labelText: "",
+                  //width: 75,
+                ),
 
-              //contact5
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Contact 2",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                const SizedBox(height: 10,),
+
+                //contact5
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text(
+                    "Contact 2",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              CustomTextFieldWidget(
-                editingController: contact5TextEditingController,
-                labelText: "",
-                //width: 75,
-              ),
+                const SizedBox(height: 5,),
 
-              const SizedBox(height: 10,),
+                CustomTextFieldWidget(
+                  editingController: contact5TextEditingController,
+                  labelText: "",
+                  //width: 75,
+                ),
 
-              //contact6
-              const Padding(
-                padding: EdgeInsets.only(left: 55),
-                child: Text(
-                  "Contact 3",
-                  style: TextStyle(
-                    color: textColor,
-                    letterSpacing: -1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    fontFamily: 'Adam',
+                const SizedBox(height: 10,),
+
+                //contact6
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text(
+                    "Contact 3",
+                    style: TextStyle(
+                      color: textColor,
+                      letterSpacing: -1,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Adam',
+                    ),
                   ),
                 ),
-              ),
 
-              CustomTextFieldWidget(
-                editingController: contact6TextEditingController,
-                labelText: "",
-                //width: 75,
-              ),
+                const SizedBox(height: 5,),
 
-              const SizedBox(height: 10,),
+                CustomTextFieldWidget(
+                  editingController: contact6TextEditingController,
+                  labelText: "",
+                  //width: 75,
+                ),
 
-              showProgressBar == true
-                  ? const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange),
-              )
-                  : Container(),
+                const SizedBox(height: 10,),
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 32),
-                  child: GestureDetector(
-                    onTap: () async {
-                      if (contact1TextEditingController.text.trim().isNotEmpty
-                          && contact2TextEditingController.text.trim().isNotEmpty
-                          && contact3TextEditingController.text.trim().isNotEmpty
-                          && contact4TextEditingController.text.trim().isNotEmpty
-                          && contact5TextEditingController.text.trim().isNotEmpty
-                          && contact6TextEditingController.text.trim().isNotEmpty
-                      )
-                      {
-                        setState(() {
-                          showProgressBar = true;
-                        });
+                showProgressBar == true
+                    ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+                )
+                    : Container(),
 
-                        setState(() {
-                          showProgressBar = false;
-                        });
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 32),
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (contact1TextEditingController.text.trim().isNotEmpty
+                            && contact2TextEditingController.text.trim().isNotEmpty
+                            && contact3TextEditingController.text.trim().isNotEmpty
+                            && contact4TextEditingController.text.trim().isNotEmpty
+                            && contact5TextEditingController.text.trim().isNotEmpty
+                            && contact6TextEditingController.text.trim().isNotEmpty
+                        )
+                        {
+                          setState(() {
+                            showProgressBar = true;
+                          });
 
-                        try {
-                          authenticationController.userContacts(
-                            contact1TextEditingController.text.trim(),
-                            contact2TextEditingController.text.trim(),
-                            contact3TextEditingController.text.trim(),
-                            contact4TextEditingController.text.trim(),
-                            contact5TextEditingController.text.trim(),
-                            contact6TextEditingController.text.trim(),
-                          );
-                          Get.to(
-                            const MapPage(),
-                            transition: Transition.fade,
-                            duration: const Duration(milliseconds: 400),
-                          );
-                        } catch (error) {
+                          setState(() {
+                            showProgressBar = false;
+                          });
+
+                          try {
+                            authenticationController.userContacts(
+                              contact1TextEditingController.text.trim(),
+                              contact2TextEditingController.text.trim(),
+                              contact3TextEditingController.text.trim(),
+                              contact4TextEditingController.text.trim(),
+                              contact5TextEditingController.text.trim(),
+                              contact6TextEditingController.text.trim(),
+                            );
+                            Get.to(
+                              const MapPage(),
+                              transition: Transition.fade,
+                              duration: const Duration(milliseconds: 400),
+                            );
+                          } catch (error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Contact saving failed: $error',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Adam',
+                                  ),
+                                ),
+                                duration: const Duration(seconds: 4),
+                              ),
+                            );
+                          } finally {
+                            setState(() {
+                              showProgressBar = false;
+                            });
+                          }
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Contact saving failed: $error',
+                                'A Field is empty. Please fill out all text fields.',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Adam',
                                 ),
                               ),
-                              duration: const Duration(seconds: 4),
+                              duration: Duration(seconds: 2),
                             ),
                           );
-                        } finally {
-                          setState(() {
-                            showProgressBar = false;
-                          });
                         }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'A Field is empty. Please fill out all text fields.',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Adam',
-                              ),
-                            ),
-                            duration: Duration(seconds: 2),
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),  //20, 10
+                        decoration: BoxDecoration(
+                          color: HexColor('DEA5A5'),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Text(
+                          "Save",
+                          style: TextStyle(
+                            letterSpacing: -1,
+                            fontSize: 16,
+                            fontFamily: 'Adam',
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
                           ),
-                        );
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),  //20, 10
-                      decoration: BoxDecoration(
-                        color: HexColor('B7A3A3'),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Text(
-                        "Save",
-                        style: TextStyle(
-                          letterSpacing: -1,
-                          fontSize: 16,
-                          fontFamily: 'Adam',
-                          color: Colors.black,
-                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 50,),
-            ]
+                SizedBox(height: 50,),
+              ]
+          ),
         ),
       ),
     );

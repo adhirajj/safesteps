@@ -41,7 +41,7 @@ class CustomTextFieldWidget extends StatelessWidget {
             labelText: labelText,
             alignLabelWithHint: true,
             filled: true,
-            fillColor: HexColor('B7A3A3'),
+            fillColor: HexColor('DEA5A5'),
             labelStyle: const TextStyle(
               color: Colors.black,
               fontSize: 10,
