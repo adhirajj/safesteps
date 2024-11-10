@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:another_telephony/telephony.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
@@ -57,7 +60,7 @@ class _MapPageState extends State<MapPage> {
   Timer? _debounce;
   bool _useSafePath = true;  // Default to safe path
 
-  final telephonySMS = TelephonySMS();
+  final Telephony telephony = Telephony.instance;
 
   Future<List<String?>> contacts = AuthenticationController.authController.getUserContacts();
   String? contact1;
@@ -244,12 +247,100 @@ class _MapPageState extends State<MapPage> {
         'Share Live Location',
         'This sends your live location to contacts of your choice',
             () async {
-          try {
-            await telephonySMS.requestPermission();
+          String locationLink = "";
+          if (currentLocation != null) {
+            locationLink = "http://maps.google.com/maps?q=${currentLocation!.latitude},${currentLocation!.longitude}";
+          }
 
-            await telephonySMS.sendSMS(phone: contact5!, message: "Live Location test");
+          String liveLocationMessage = """Live Location Tracking: 
+    Location: $locationLink 
+    Time: ${DateTime.now()}""";
+
+          try {
+            if (Platform.isAndroid) {
+              // Request SMS permissions for Android
+              bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+
+              if (permissionsGranted == true) {
+                // Send SMS to tracking contacts
+                if (contact4 != null) {
+                  await telephony.sendSms(
+                    to: contact4!,
+                    message: liveLocationMessage,
+                  );
+                }
+                if (contact5 != null) {
+                  await telephony.sendSms(
+                    to: contact5!,
+                    message: liveLocationMessage,
+                  );
+                }
+                if (contact6 != null) {
+                  await telephony.sendSms(
+                    to: contact6!,
+                    message: liveLocationMessage,
+                  );
+                }
+              }
+            } else if (Platform.isIOS) {
+              // For iOS, use URL scheme
+              List<String> recipients = [];
+              if (contact4 != null) recipients.add(contact4!);
+              if (contact5 != null) recipients.add(contact5!);
+              if (contact6 != null) recipients.add(contact6!);
+
+              // Format numbers for iOS
+              String recipientsString = '';
+              if (recipients.isNotEmpty) {
+                recipientsString = recipients[0];
+                for (int i = 1; i < recipients.length; i++) {
+                  recipientsString += ';${recipients[i]}';
+                }
+              }
+
+              // Create properly formatted iOS SMS URI
+              final smsUri = Uri.parse(
+                  'sms:$recipientsString${Uri.encodeFull('&body=$liveLocationMessage')}'
+              );
+
+              print("Live Location SMS URI: $smsUri"); // Debug print
+
+              if (await canLaunchUrl(smsUri)) {
+                await launchUrl(smsUri, mode: LaunchMode.platformDefault);
+              }
+            }
+
+            // Show confirmation
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Live location shared with tracking contacts',
+                    style: TextStyle(
+                      fontFamily: 'Adam',
+                      fontSize: 12,
+                    ),
+                  ),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            }
           } catch (e) {
-            print("Error: $e");
+            print("Error sharing live location: $e");
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Error sharing live location. Please try again.',
+                    style: TextStyle(
+                      fontFamily: 'Adam',
+                      fontSize: 12,
+                    ),
+                  ),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            }
           }
         }
     ),
@@ -1357,17 +1448,105 @@ class _MapPageState extends State<MapPage> {
                     onTap: () async {
                       //SOS functionality
                       print("SOS pushed");
-                      call(phoneNo) async {
-                        final Uri phoneCall = Uri(
-                          scheme: 'tel',
-                          path: phoneNo,
-                        );
-                        await launchUrl(phoneCall, mode: LaunchMode.platformDefault);
+
+                      String locationLink = "";
+                      if (currentLocation != null) {
+                        locationLink = "http://maps.google.com/maps?q=${currentLocation!.latitude},${currentLocation!.longitude}";
                       }
 
-                      await call('911');
-                      await telephonySMS.requestPermission();
-                      await telephonySMS.sendSMS(phone: contact1!, message: "SOS");
+                      String sosMessage = """EMERGENCY: I need help! 
+                      Location: $locationLink 
+                      Time: ${DateTime.now()}""";
+
+                      try {
+                        // Make emergency call
+                        await call('911');
+
+                        if (Platform.isAndroid) {
+                          // Request SMS permissions
+                          bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+
+                          if (permissionsGranted == true) {
+                            // Send SMS to all emergency contacts
+                            if (contact1 != null) {
+                              await telephony.sendSms(
+                                to: contact1!,
+                                message: sosMessage,
+                              );
+                            }
+                            if (contact2 != null) {
+                              await telephony.sendSms(
+                                to: contact2!,
+                                message: sosMessage,
+                              );
+                            }
+                            if (contact3 != null) {
+                              await telephony.sendSms(
+                                to: contact3!,
+                                message: sosMessage,
+                              );
+                            }
+                          }
+                        } else if (Platform.isIOS) {
+                          // For iOS, use URL scheme
+                          List<String> recipients = [];
+                          if (contact1 != null) recipients.add(contact1!);
+                          if (contact2 != null) recipients.add(contact2!);
+                          if (contact3 != null) recipients.add(contact3!);
+
+                          // Format numbers for iOS
+                          String recipientsString = '';
+                          if (recipients.isNotEmpty) {
+                            recipientsString = recipients[0];
+                            for (int i = 1; i < recipients.length; i++) {
+                              recipientsString += ';${recipients[i]}';
+                            }
+                          }
+
+                          // Create properly formatted iOS SMS URI
+                          final smsUri = Uri.parse(
+                              'sms:$recipientsString${Uri.encodeFull('&body=$sosMessage')}'
+                          );
+
+                          print("SMS URI: $smsUri"); // Debug print
+
+                          if (await canLaunchUrl(smsUri)) {
+                            await launchUrl(smsUri, mode: LaunchMode.platformDefault);
+                          }
+                        }
+
+                        // Show confirmation
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Emergency services contacted and location shared',
+                                style: TextStyle(
+                                  fontFamily: 'Adam',
+                                  fontSize: 12,
+                                ),
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        print("Error in SOS: $e");
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Error sending emergency messages. Please dial 911 directly.',
+                                style: TextStyle(
+                                  fontFamily: 'Adam',
+                                  fontSize: 12,
+                                ),
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      }
                     },
                     child: Container(
                       height: 70,

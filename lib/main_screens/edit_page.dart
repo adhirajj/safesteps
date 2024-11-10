@@ -365,22 +365,36 @@ class _EditPageState extends State<EditPage> {
                           );
                         }
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),  //20, 10
-                        decoration: BoxDecoration(
-                          color: HexColor('DEA5A5'),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: const Text(
-                          "Save",
-                          style: TextStyle(
-                            letterSpacing: -1,
-                            fontSize: 16,
-                            fontFamily: 'Adam',
-                            color: Colors.black,
-                            fontWeight: FontWeight.normal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+
+                          Padding(
+                            padding: EdgeInsets.only(left: 22),
+                            child: IconButton(onPressed: (){
+                              Get.back();
+                            }, icon: Icon(Icons.arrow_back_ios_new, color: Colors.black54, size: 22,)
+                            ),
                           ),
-                        ),
+
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),  //20, 10
+                            decoration: BoxDecoration(
+                              color: HexColor('DEA5A5'),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Text(
+                              "Save",
+                              style: TextStyle(
+                                letterSpacing: -1,
+                                fontSize: 16,
+                                fontFamily: 'Adam',
+                                color: Colors.black,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

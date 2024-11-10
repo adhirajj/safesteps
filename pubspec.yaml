@@ -51,6 +51,7 @@ dependencies:
   telephony_sms:
   http:
   flutter_launcher_icons:
+  another_telephony:
 
 dev_dependencies:
   flutter_test:

@@ -28,6 +28,8 @@
     <string>This app needs access to location when open to show your current location on the map.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>This app needs access to location when in the background to track your route.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This app requires SMS permissions to send emergency messages.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>This app needs access to location when open and in the background for emergency services tracking.</string>
     <key>UIBackgroundModes</key>
