@@ -172,22 +172,22 @@ class _SignupPageState extends State<SignupPage> {
                       if (emailTextEditingController.text.trim().isNotEmpty
                         && passwordTextEditingController.text.trim().isNotEmpty) {
 
-                        // if (!isUniversityEmail(emailTextEditingController.text.trim())) {
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     const SnackBar(
-                        //       content: Text(
-                        //         'Please use a valid university email address.',
-                        //         style: TextStyle(
-                        //           fontSize: 16,
-                        //           fontWeight: FontWeight.bold,
-                        //           fontFamily: 'Adam',
-                        //         ),
-                        //       ),
-                        //       duration: Duration(seconds: 2),
-                        //     ),
-                        //   );
-                        //   return;
-                        // }
+                        if (!isUniversityEmail(emailTextEditingController.text.trim())) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Please use a valid university email address.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Adam',
+                                ),
+                              ),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                          return;
+                        }
 
                         try {
                           await authenticationController
