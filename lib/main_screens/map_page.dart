@@ -535,7 +535,7 @@ class _MapPageState extends State<MapPage> {
                 GoogleMap(
                   initialCameraPosition: CameraPosition(
                       target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-                      zoom: 15
+                      zoom: 18
                   ),
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
