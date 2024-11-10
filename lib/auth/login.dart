@@ -184,12 +184,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                showProgressBar == true
-                    ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange),
-                )
-                    : Container(),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
@@ -269,6 +263,15 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
+                showProgressBar == true
+                    ? Align(
+                  alignment: Alignment.center,
+                      child: const CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+                                      ),
+                    )
+                    : Container(),
               ]
           ),
         ),

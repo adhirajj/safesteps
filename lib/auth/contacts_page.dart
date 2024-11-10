@@ -298,12 +298,6 @@ class _ContactsPageState extends State<ContactsPage> {
 
                 const SizedBox(height: 10,),
 
-                showProgressBar == true
-                    ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
-                )
-                    : Container(),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
@@ -395,6 +389,15 @@ class _ContactsPageState extends State<ContactsPage> {
                     ),
                   ),
                 ),
+
+                showProgressBar == true
+                    ? Align(
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+                  ),
+                )
+                    : Container(),
 
                 SizedBox(height: 50,),
               ]
