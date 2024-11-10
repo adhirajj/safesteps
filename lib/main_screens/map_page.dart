@@ -1199,12 +1199,6 @@ class _MapPageState extends State<MapPage> {
                     ),
 
                     Marker(
-                      markerId: MarkerId("Wilder – East Side"),
-                      icon: customIcon ?? BitmapDescriptor.defaultMarker,
-                      position: helpline123,
-                    ),
-
-                    Marker(
                       markerId: MarkerId("Windmill Lane - North Side"),
                       icon: customIcon ?? BitmapDescriptor.defaultMarker,
                       position: helpline124,
