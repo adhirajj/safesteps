@@ -120,14 +120,41 @@ class _MapPageState extends State<MapPage> {
   }
 
   late final List<DrawerItem> drawerItems = [
+    // DrawerItem(
+    //     'Share Live Location',
+    //     'This sends your live location to contacts of your choice',
+    //         () async {
+    //           await telephonySMS.requestPermission();
+    //           print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    //           await telephonySMS.sendSMS(phone: contact4!, message: "Live Location test");
+    //           print("finished first message send");
+    //           await telephonySMS.sendSMS(phone: contact5!, message: "Live Location");
+    //           print("finished second message send");
+    //           await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
+    //     }
+    // ),
     DrawerItem(
         'Share Live Location',
         'This sends your live location to contacts of your choice',
             () async {
-              await telephonySMS.requestPermission();
-              await telephonySMS.sendSMS(phone: contact4!, message: "Live Location");
-              await telephonySMS.sendSMS(phone: contact5!, message: "Live Location");
-              await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
+          try {
+            await telephonySMS.requestPermission();
+
+            await telephonySMS.sendSMS(phone: contact5!, message: "Live Location test");
+            print("First message sent");
+
+            await Future.delayed(Duration(seconds: 1)); // Add delay
+
+            await telephonySMS.sendSMS(phone: contact4!, message: "Live Location");
+            print("Second message sent");
+
+            await Future.delayed(Duration(seconds: 1)); // Add delay
+
+            await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
+            print("Third message sent");
+          } catch (e) {
+            print("Error: $e");
+          }
         }
     ),
     DrawerItem(

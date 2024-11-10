@@ -55,7 +55,7 @@ class _EditPageState extends State<EditPage> {
           child: Padding(
             padding: EdgeInsets.only(left: 20, bottom: 20),
             child: Text(
-              "Edit Emergency Contacts",
+              "Edit Emergency \nContacts",
               style: TextStyle(
                 color: textColor,
                 fontSize: 32,
@@ -104,7 +104,7 @@ class _EditPageState extends State<EditPage> {
                 Padding(
                   padding: EdgeInsets.only(left: 45),
                   child: Text(
-                    "These are people we'll send a text alert to along with calling 911 if and when you press the SOS button",
+                    "These are people we'll send a text alert to along with calling 911 \nif and when you press the SOS button",
                     style: TextStyle(
                       color: Colors.black54,
                       letterSpacing: -1,
