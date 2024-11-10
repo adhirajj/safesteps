@@ -27,7 +27,7 @@ class CustomTextFieldWidget extends StatelessWidget {
     return Center(
       child: SizedBox(
         height: 70,
-        width: 350,
+        width: MediaQuery.of(context).size.width - 75,
         child: TextFormField(
           controller: editingController,
           textAlign: TextAlign.center,

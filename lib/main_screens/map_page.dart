@@ -1632,7 +1632,7 @@ class _MapPageState extends State<MapPage> {
                         },
                         child: Container(
                           height: 70,
-                          width: 350,
+                          width: MediaQuery.of(context).size.width - 35,
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
                             borderRadius: BorderRadius.circular(40),
