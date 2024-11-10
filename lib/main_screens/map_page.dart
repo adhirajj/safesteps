@@ -17,6 +17,18 @@ import 'package:telephony_sms/telephony_sms.dart';
 
 import '../global.dart';
 
+class WeightedLatLng {
+  final LatLng point;
+  final double weight;
+  WeightedLatLng(this.point, this.weight);
+}
+
+class SafePathResult {
+  final List<LatLng> path;
+  final double safety;
+  SafePathResult(this.path, this.safety);
+}
+
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
@@ -44,6 +56,7 @@ class _MapPageState extends State<MapPage> {
   List<PlaceSuggestion> _suggestions = [];
   bool _showSuggestions = false;
   Timer? _debounce;
+  bool _useSafePath = true;  // Default to safe path
 
   final telephonySMS = TelephonySMS();
 
@@ -54,6 +67,114 @@ class _MapPageState extends State<MapPage> {
   String? contact4;
   String? contact5;
   String? contact6;
+
+  List<LatLng> getAllHelpLineLocations() {
+    return [
+      helpline1, helpline2, helpline3, helpline4, helpline5, helpline6, helpline7, helpline8, helpline9, helpline10,
+      helpline11, helpline12, helpline13, helpline14, helpline15, helpline16, helpline17, helpline18, helpline19, helpline20,
+      helpline21, helpline22, helpline23, helpline24, helpline25, helpline26, helpline27, helpline28, helpline29, helpline30,
+      helpline31, helpline32, helpline33, helpline34, helpline35, helpline36, helpline37, helpline38, helpline39, helpline40,
+      helpline41, helpline42, helpline43, helpline44, helpline45, helpline46, helpline47, helpline48, helpline49, helpline50,
+      helpline51, helpline52, helpline53, helpline54, helpline55, helpline56, helpline57, helpline58, helpline59, helpline60,
+      helpline61, helpline62, helpline63, helpline64, helpline65, helpline66, helpline67, helpline68, helpline69, helpline70,
+      helpline71, helpline72, helpline73, helpline74, helpline75, helpline76, helpline77, helpline78, helpline79, helpline80,
+      helpline81, helpline82, helpline83, helpline84, helpline85, helpline86, helpline87, helpline88, helpline89, helpline90,
+      helpline91, helpline92, helpline93, helpline94, helpline95, helpline96, helpline97, helpline98, helpline99, helpline100,
+      helpline101, helpline102, helpline103, helpline104, helpline105, helpline106, helpline107, helpline108, helpline109, helpline110,
+      helpline111, helpline112, helpline113, helpline114, helpline115, helpline116, helpline117, helpline118, helpline119, helpline120,
+      helpline121, helpline122, helpline123, helpline124, helpline125
+    ];
+  }
+
+  double calculateSafetyScore(LatLng point, List<LatLng> helpLines) {
+    double safetyScore = 0;
+    final double MAX_SAFETY_DISTANCE = 30; // meters
+
+    for (var helpLine in helpLines) {
+      double distance = calculateDistance(point, helpLine);
+      if (distance <= MAX_SAFETY_DISTANCE) {
+        // Higher score for closer help lines
+        safetyScore += 1 - (distance / MAX_SAFETY_DISTANCE);
+      }
+    }
+
+    return safetyScore;
+  }
+
+  double calculateDistance(LatLng point1, LatLng point2) {
+    const double EARTH_RADIUS = 6371000; // Earth's radius in meters
+
+    double lat1 = point1.latitude * pi / 180;
+    double lat2 = point2.latitude * pi / 180;
+    double dLat = (point2.latitude - point1.latitude) * pi / 180;
+    double dLon = (point2.longitude - point1.longitude) * pi / 180;
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return EARTH_RADIUS * c;
+  }
+
+  SafePathResult findSafePath(List<LatLng> originalPath, List<LatLng> helpLines) {
+    if (originalPath.length < 2) return SafePathResult(originalPath, 0);
+
+    List<LatLng> safePath = [];
+    double totalSafety = 0;
+
+    // Parameters for path adjustment
+    final double MAX_DEVIATION = 40; // Maximum meters of deviation allowed
+    final int INTERPOLATION_POINTS = 5; // Number of points to check between segments
+
+    for (int i = 0; i < originalPath.length - 1; i++) {
+      LatLng start = originalPath[i];
+      LatLng end = originalPath[i + 1];
+
+      List<WeightedLatLng> candidates = [];
+      candidates.add(WeightedLatLng(start, calculateSafetyScore(start, helpLines)));
+
+      // Generate intermediate points
+      for (int j = 1; j < INTERPOLATION_POINTS - 1; j++) {
+        double fraction = j / INTERPOLATION_POINTS;
+        LatLng interpolated = LatLng(
+            start.latitude + (end.latitude - start.latitude) * fraction,
+            start.longitude + (end.longitude - start.longitude) * fraction
+        );
+
+        // Check perpendicular deviations
+        for (double deviation = -MAX_DEVIATION; deviation <= MAX_DEVIATION; deviation += MAX_DEVIATION / 2) {
+          // Calculate perpendicular point
+          double bearing = atan2(end.longitude - start.longitude, end.latitude - start.latitude) + pi/2;
+          double lat = interpolated.latitude + (deviation / 111111) * cos(bearing);
+          double lng = interpolated.longitude + (deviation / (111111 * cos(interpolated.latitude * pi/180))) * sin(bearing);
+
+          LatLng deviatedPoint = LatLng(lat, lng);
+          double safetyScore = calculateSafetyScore(deviatedPoint, helpLines);
+          candidates.add(WeightedLatLng(deviatedPoint, safetyScore));
+        }
+      }
+
+      candidates.add(WeightedLatLng(end, calculateSafetyScore(end, helpLines)));
+
+      // Select best candidate based on safety score and distance
+      WeightedLatLng bestPoint = candidates.reduce((curr, next) {
+        double currDeviation = calculateDistance(curr.point, originalPath[i]);
+        double nextDeviation = calculateDistance(next.point, originalPath[i]);
+
+        // Balance between safety and deviation
+        double currScore = curr.weight - (currDeviation / MAX_DEVIATION) * 0.5;
+        double nextScore = next.weight - (nextDeviation / MAX_DEVIATION) * 0.5;
+
+        return currScore > nextScore ? curr : next;
+      });
+
+      safePath.add(bestPoint.point);
+      totalSafety += bestPoint.weight;
+    }
+
+    safePath.add(originalPath.last);
+    return SafePathResult(safePath, totalSafety / safePath.length);
+  }
 
   Future<void> loadCustomIcon() async {
     BitmapDescriptor.asset(
@@ -1237,6 +1358,28 @@ class _MapPageState extends State<MapPage> {
                 ),
               ),
 
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 100,  // Position it below the search bar
+                right: 16,
+                child: Switch(
+                  value: _useSafePath,
+                  onChanged: (bool value) {
+                    setState(() {
+                      _useSafePath = value;
+                      // Recalculate route if there's a destination
+                      if (destinationMarker != null && currentLocation != null) {
+                        getDirections(
+                          LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+                          destinationMarker!.position,
+                        );
+                      }
+                    });
+                  },
+                  activeColor: HexColor("#881C1C"),
+                  activeTrackColor: HexColor("#E3ADAD"),
+                ),
+              ),
+
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -1430,7 +1573,73 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> getDirections(LatLng origin, LatLng destination) async {
+  // Future<void> getDirections(LatLng origin, LatLng destination) async {
+  //   try {
+  //     final String googleApiKey = API;
+  //     final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+  //     final response = await http.get(
+  //         Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       if (data['routes'] != null && data['routes'].isNotEmpty) {
+  //         final points = decodePolyline(data['routes'][0]['overview_polyline']['points']);
+  //
+  //         setState(() {
+  //           _polylines.clear();
+  //           _polylines.add(
+  //             Polyline(
+  //               polylineId: PolylineId('route'),
+  //               points: points,
+  //               color: Colors.blue,
+  //               width: 5,
+  //             ),
+  //           );
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print('Error getting directions: $e');
+  //   }
+  // }
+
+  // Modify the getDirections method to use the safe path
+  Future<void> getSafeDirections(LatLng origin, LatLng destination) async {
+    try {
+      final String googleApiKey = API;
+      final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
+      final response = await http.get(
+          Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final List<LatLng> originalPoints = decodePolyline(data['routes'][0]['overview_polyline']['points']);
+
+          final helpLines = getAllHelpLineLocations();
+          final SafePathResult safePathResult = findSafePath(originalPoints, helpLines);
+
+          setState(() {
+            _polylines.clear();
+            _polylines.add(
+              Polyline(
+                polylineId: PolylineId('route'),
+                points: safePathResult.path,
+                color: Colors.blue,
+                width: 5,
+              ),
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print('Error getting directions: $e');
+    }
+  }
+
+  Future<void> getRegularDirections(LatLng origin, LatLng destination) async {
     try {
       final String googleApiKey = API;
       final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
@@ -1458,6 +1667,14 @@ class _MapPageState extends State<MapPage> {
       }
     } catch (e) {
       print('Error getting directions: $e');
+    }
+  }
+
+  Future<void> getDirections(LatLng origin, LatLng destination) async {
+    if (_useSafePath) {
+      await getSafeDirections(origin, destination);
+    } else {
+      await getRegularDirections(origin, destination);
     }
   }
 

@@ -50,6 +50,7 @@ dependencies:
   pdfx: ^2.8.0
   telephony_sms:
   http:
+  flutter_sms:
 
 dev_dependencies:
   flutter_test:
