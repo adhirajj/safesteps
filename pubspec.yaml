@@ -48,10 +48,9 @@ dependencies:
   location:
   google_maps_flutter_ios:
   pdfx: ^2.8.0
-  telephony_sms:
   http:
   flutter_launcher_icons:
-  another_telephony:
+  telephony_sms:
 
 dev_dependencies:
   flutter_test:

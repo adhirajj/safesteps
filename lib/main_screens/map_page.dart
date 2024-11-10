@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:another_telephony/telephony.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_color/flutter_color.dart';
@@ -17,7 +16,6 @@ import '../auth/login.dart';
 import 'dart:async';
 import 'package:safesteps/main_screens/umass_pdf_page.dart';
 import 'package:telephony_sms/telephony_sms.dart';
-
 import '../global.dart';
 
 class WeightedLatLng {
@@ -62,7 +60,7 @@ class _MapPageState extends State<MapPage> {
   String? _routeDuration;
   int? _nearbyHelpPhones;
 
-  final Telephony telephony = Telephony.instance;
+  final telephonySMS = TelephonySMS();
 
   Future<List<String?>> contacts = AuthenticationController.authController.getUserContacts();
   String? contact1;
@@ -289,27 +287,18 @@ class _MapPageState extends State<MapPage> {
           try {
             if (Platform.isAndroid) {
               // Request SMS permissions for Android
-              bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+              await telephonySMS.requestPermission();
 
-              if (permissionsGranted == true) {
+              if (Platform.isAndroid) {
                 // Send SMS to tracking contacts
                 if (contact4 != null) {
-                  await telephony.sendSms(
-                    to: contact4!,
-                    message: liveLocationMessage,
-                  );
+                  await telephonySMS.sendSMS(phone: contact4!, message: liveLocationMessage);
                 }
                 if (contact5 != null) {
-                  await telephony.sendSms(
-                    to: contact5!,
-                    message: liveLocationMessage,
-                  );
+                  await telephonySMS.sendSMS(phone: contact5!, message: liveLocationMessage);
                 }
                 if (contact6 != null) {
-                  await telephony.sendSms(
-                    to: contact6!,
-                    message: liveLocationMessage,
-                  );
+                  await telephonySMS.sendSMS(phone: contact6!, message: liveLocationMessage);
                 }
               }
             } else if (Platform.isIOS) {
@@ -1566,37 +1555,26 @@ class _MapPageState extends State<MapPage> {
                             // Make emergency call
                             await call('911');
 
-                            if (Platform.isAndroid) {
-                              // Request SMS permissions
-                              bool? permissionsGranted = await telephony.requestPhoneAndSmsPermissions;
+                        // Request SMS permissions
+                        await telephonySMS.requestPermission();
 
-                              if (permissionsGranted == true) {
-                                // Send SMS to all emergency contacts
-                                if (contact1 != null) {
-                                  await telephony.sendSms(
-                                    to: contact1!,
-                                    message: sosMessage,
-                                  );
-                                }
-                                if (contact2 != null) {
-                                  await telephony.sendSms(
-                                    to: contact2!,
-                                    message: sosMessage,
-                                  );
-                                }
-                                if (contact3 != null) {
-                                  await telephony.sendSms(
-                                    to: contact3!,
-                                    message: sosMessage,
-                                  );
-                                }
-                              }
-                            } else if (Platform.isIOS) {
-                              // For iOS, use URL scheme
-                              List<String> recipients = [];
-                              if (contact1 != null) recipients.add(contact1!);
-                              if (contact2 != null) recipients.add(contact2!);
-                              if (contact3 != null) recipients.add(contact3!);
+                        if (Platform.isAndroid) {
+                          // Send SMS to all emergency contacts
+                          if (contact1 != null) {
+                            await telephonySMS.sendSMS(phone: contact1!, message: sosMessage);
+                          }
+                          if (contact2 != null) {
+                            await telephonySMS.sendSMS(phone: contact2!, message: sosMessage);
+                          }
+                          if (contact3 != null) {
+                            await telephonySMS.sendSMS(phone: contact3!, message: sosMessage);
+                          }
+                        } else if (Platform.isIOS) {
+                          // For iOS, use URL scheme
+                          List<String> recipients = [];
+                          if (contact1 != null) recipients.add(contact1!);
+                          if (contact2 != null) recipients.add(contact2!);
+                          if (contact3 != null) recipients.add(contact3!);
 
                               // Format numbers for iOS
                               String recipientsString = '';
