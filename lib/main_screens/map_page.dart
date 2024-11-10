@@ -46,7 +46,6 @@ class DrawerItem {
 
 class _MapPageState extends State<MapPage> {
 
-  static const LatLng _pHagisMall = LatLng(42.3863, -72.5258);
   late GoogleMapController mapController;
   LocationData? currentLocation;
   BitmapDescriptor? customIcon;
@@ -241,19 +240,6 @@ class _MapPageState extends State<MapPage> {
   }
 
   late final List<DrawerItem> drawerItems = [
-    // DrawerItem(
-    //     'Share Live Location',
-    //     'This sends your live location to contacts of your choice',
-    //         () async {
-    //           await telephonySMS.requestPermission();
-    //           print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    //           await telephonySMS.sendSMS(phone: contact4!, message: "Live Location test");
-    //           print("finished first message send");
-    //           await telephonySMS.sendSMS(phone: contact5!, message: "Live Location");
-    //           print("finished second message send");
-    //           await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
-    //     }
-    // ),
     DrawerItem(
         'Share Live Location',
         'This sends your live location to contacts of your choice',
@@ -262,17 +248,6 @@ class _MapPageState extends State<MapPage> {
             await telephonySMS.requestPermission();
 
             await telephonySMS.sendSMS(phone: contact5!, message: "Live Location test");
-            // print("First message sent");
-            //
-            // await Future.delayed(Duration(seconds: 1)); // Add delay
-            //
-            // await telephonySMS.sendSMS(phone: contact4!, message: "Live Location");
-            // print("Second message sent");
-            //
-            // await Future.delayed(Duration(seconds: 1)); // Add delay
-            //
-            // await telephonySMS.sendSMS(phone: contact6!, message: "Live Location");
-            // print("Third message sent");
           } catch (e) {
             print("Error: $e");
           }
@@ -1393,13 +1368,6 @@ class _MapPageState extends State<MapPage> {
                       await call('911');
                       await telephonySMS.requestPermission();
                       await telephonySMS.sendSMS(phone: contact1!, message: "SOS");
-                      // await call('911');
-                      //
-                      //
-                      // await telephonySMS.sendSMS(phone: contact2!, message: "SOS");
-                      // await telephonySMS.sendSMS(phone: contact3!, message: "SOS");
-                      //
-                      // await call('911');
                     },
                     child: Container(
                       height: 70,
@@ -1567,38 +1535,6 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  // Future<void> getDirections(LatLng origin, LatLng destination) async {
-  //   try {
-  //     final String googleApiKey = API;
-  //     final String baseUrl = 'https://maps.googleapis.com/maps/api/directions/json';
-  //     final response = await http.get(
-  //         Uri.parse('$baseUrl?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=$googleApiKey')
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       final data = json.decode(response.body);
-  //       if (data['routes'] != null && data['routes'].isNotEmpty) {
-  //         final points = decodePolyline(data['routes'][0]['overview_polyline']['points']);
-  //
-  //         setState(() {
-  //           _polylines.clear();
-  //           _polylines.add(
-  //             Polyline(
-  //               polylineId: PolylineId('route'),
-  //               points: points,
-  //               color: Colors.blue,
-  //               width: 5,
-  //             ),
-  //           );
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print('Error getting directions: $e');
-  //   }
-  // }
-
-  // Modify the getDirections method to use the safe path
   Future<void> getSafeDirections(LatLng origin, LatLng destination) async {
     try {
       final String googleApiKey = API;

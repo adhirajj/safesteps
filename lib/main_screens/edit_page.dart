@@ -298,12 +298,6 @@ class _EditPageState extends State<EditPage> {
 
                 const SizedBox(height: 10,),
 
-                showProgressBar == true
-                    ? const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
-                )
-                    : Container(),
-
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
@@ -391,6 +385,15 @@ class _EditPageState extends State<EditPage> {
                     ),
                   ),
                 ),
+
+                showProgressBar == true
+                    ? Align(
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
+                  ),
+                )
+                    : Container(),
 
                 SizedBox(height: 50,),
               ]
