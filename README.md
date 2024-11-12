@@ -2,6 +2,10 @@
 
 SafeStep is a campus safety companion app designed to enhance student security by combining real-time safety features with campus-specific mapping tools. Centered around the locations of campus HELP phones, SafeStep empowers students to navigate campus safely, stay connected with friends or security, and access emergency resources directly from their mobile devices.
 
+### This project was developed in 36 hours for HackUMass XII 2024 and won the category - Best UMass Hack.
+
+[Advait Bharadwaj's Devpost](https://devpost.com/abharadwaj345 "Advait Bharadwaj's Devpost") | [Adhiraj Chadha's Devpost](https://devpost.com/adhirajchadh "Adhiraj Chadha's Devpost")
+
 ## Project Idea
 
 "Walking across campus at night shouldn't be a source of anxiety. SafeStep transforms how students navigate campus by mapping all HELP phones and providing real-time safety features. With live location sharing, direct connection to campus security, and smart navigation to guide you along well-lit paths, SafeStep puts comprehensive safety tools right in your pocket. We're not just updating the HELP phone system – we're creating a dynamic safety companion that gives both students and campus security the modern tools they need to ensure everyone gets home safely."
